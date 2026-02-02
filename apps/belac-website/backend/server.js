@@ -38,7 +38,12 @@ function saveSuggestions(suggestions) {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Belac is alive' })
+  res.json({ 
+    status: 'ok', 
+    message: 'Belac is alive and deployed',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'production'
+  })
 })
 
 // Get Belac info
