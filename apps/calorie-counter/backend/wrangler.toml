@@ -1,7 +1,14 @@
-name = "calorie-counter-worker"
+name = "calorie-counter"
 main = "src/index.js"
-type = "service"
 compatibility_date = "2024-01-01"
 
-[vars]
-DATABASE_URL = "postgresql://postgres:TThUlTbUwJYVDgMWWiKOgsKcbLtoNoFk@switchyard.proxy.rlwy.net:45864/railway"
+[env.production]
+name = "calorie-counter"
+vars = { BACKEND_URL = "https://belac-fun.up.railway.app" }
+
+[env.development]
+vars = { BACKEND_URL = "http://localhost:3000" }
+
+# Serve frontend static files
+[site]
+bucket = "../frontend/dist"

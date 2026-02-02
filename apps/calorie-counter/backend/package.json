@@ -7,6 +7,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@cloudflare/kv-asset-handler": "^0.4.2",
     "pg": "^8.11.3"
   },
   "devDependencies": {

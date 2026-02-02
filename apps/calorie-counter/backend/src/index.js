@@ -1,87 +1,71 @@
-import { Pool } from 'pg'
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
-})
+const BACKEND_URL = 'https://belac-fun.up.railway.app'
+const INDEX_HTML = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calorie Counter</title>
+    <script type="module" crossorigin src="/assets/index-CEXT-ldi.js"><\/script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cbw3XDyS.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>`
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
-    const path = url.pathname
-    const method = request.method
+    const pathname = url.pathname
 
-    try {
-      // Health check
-      if (path === '/api/health') {
-        return new Response(JSON.stringify({ 
-          status: 'ok', 
-          service: 'Calorie Counter Worker',
-          timestamp: new Date().toISOString()
-        }), { headers: { 'Content-Type': 'application/json' } })
-      }
+    // Handle API routes
+    if (pathname.startsWith('/api/')) {
+      return proxyAPI(request, pathname)
+    }
 
-      // Get all entries (today)
-      if (path === '/api/entries' && method === 'GET') {
-        const result = await pool.query(
-          'SELECT id, food, calories, protein, created_at FROM calorie_entries WHERE date = CURRENT_DATE ORDER BY created_at DESC'
-        )
-        return new Response(JSON.stringify({ entries: result.rows, count: result.rows.length }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      // Add entry
-      if (path === '/api/entries' && method === 'POST') {
-        const { food, calories, protein } = await request.json()
-
-        if (!food || calories === undefined || protein === undefined) {
-          return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-          })
-        }
-
-        const result = await pool.query(
-          'INSERT INTO calorie_entries (food, calories, protein) VALUES ($1, $2, $3) RETURNING id, food, calories, protein, created_at',
-          [food.trim(), parseFloat(calories), parseFloat(protein)]
-        )
-
-        return new Response(JSON.stringify({ success: true, entry: result.rows[0] }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      // Delete entry
-      if (path.startsWith('/api/entries/') && method === 'DELETE') {
-        const id = path.split('/').pop()
-        await pool.query('DELETE FROM calorie_entries WHERE id = $1', [id])
-        return new Response(JSON.stringify({ success: true }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      // Get entries for specific date
-      if (path.startsWith('/api/entries/') && method === 'GET') {
-        const date = path.split('/').pop()
-        const result = await pool.query(
-          'SELECT id, food, calories, protein, created_at FROM calorie_entries WHERE date = $1 ORDER BY created_at DESC',
-          [date]
-        )
-        return new Response(JSON.stringify({ entries: result.rows, count: result.rows.length }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      return new Response(JSON.stringify({ error: 'Not found' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    } catch (error) {
-      console.error('Error:', error)
-      return new Response(JSON.stringify({ error: 'Internal server error' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
+    // Serve index.html for SPA
+    if (pathname === '/' || !pathname.includes('.')) {
+      return new Response(INDEX_HTML, {
+        headers: { 'Content-Type': 'text/html' }
       })
     }
+
+    // Static assets would go here - for now 404
+    return new Response('Not found', { status: 404 })
+  }
+}
+
+async function proxyAPI(request, pathname) {
+  const targetUrl = BACKEND_URL + pathname
+
+  try {
+    let body = null
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
+      body = await request.text()
+    }
+
+    const response = await fetch(targetUrl, {
+      method: request.method,
+      headers: { 'Content-Type': 'application/json' },
+      body
+    })
+
+    const responseText = await response.text()
+    return new Response(responseText, {
+      status: response.status,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+  } catch (error) {
+    console.error('Backend error:', error)
+    return new Response(JSON.stringify({
+      error: 'Backend unavailable',
+      details: error.message
+    }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    })
   }
 }
