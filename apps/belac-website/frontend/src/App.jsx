@@ -1,27 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
 import { SiReact, SiNodedotjs, SiCloudflare, SiGithub, SiPostgresql, SiExpress } from 'react-icons/si'
 import { BiGitMerge, BiCodeBlock, BiLink, BiSolidCog, BiChip } from 'react-icons/bi'
-import { MdOutlineRocket } from 'react-icons/md'
+import { MdOutlineRocket, MdHome, MdSchema, MdLightbulb, MdDashboard } from 'react-icons/md'
 import './App.css'
+import Dashboard from './pages/Dashboard'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
 
   const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'capabilities', label: 'Capabilities' },
-    { id: 'stack', label: 'Stack' },
-    { id: 'philosophy', label: 'Philosophy' },
+    { id: 'home', label: 'Home', icon: MdHome },
+    { id: 'capabilities', label: 'Capabilities', icon: BiSolidCog },
+    { id: 'stack', label: 'Stack', icon: MdSchema },
+    { id: 'philosophy', label: 'Philosophy', icon: MdLightbulb },
+    { id: 'dashboard', label: 'Dashboard', icon: MdDashboard },
   ]
 
   return (
@@ -40,16 +32,19 @@ export default function App() {
             <div className="logo-accent">Digital Familiar</div>
           </div>
           <nav className="nav">
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-                onClick={() => setActiveSection(item.id)}
-              >
-                <span>{item.label}</span>
-                {activeSection === item.id && <div className="nav-indicator"></div>}
-              </button>
-            ))}
+            {navItems.map(item => {
+              const IconComponent = item.icon
+              return (
+                <button
+                  key={item.id}
+                  className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                  onClick={() => setActiveSection(item.id)}
+                >
+                  <span>{item.label}</span>
+                  {activeSection === item.id && <div className="nav-indicator"></div>}
+                </button>
+              )
+            })}
           </nav>
           <a href="https://x.com/i/communities/2013830646201024623" className="cta-badge">
             <span>Community</span>
@@ -269,7 +264,29 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        {/* Dashboard */}
+        <section className={`view dashboard-view ${activeSection === 'dashboard' ? 'active' : ''}`}>
+          <Dashboard />
+        </section>
       </main>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="mobile-nav">
+        {navItems.map(item => {
+          const IconComponent = item.icon
+          return (
+            <button
+              key={item.id}
+              className={`mobile-nav-item ${activeSection === item.id ? 'active' : ''}`}
+              onClick={() => setActiveSection(item.id)}
+              title={item.label}
+            >
+              <IconComponent />
+            </button>
+          )
+        })}
+      </nav>
 
       <footer className="footer">
         <p>Digital familiar. No limits. Just momentum.</p>
