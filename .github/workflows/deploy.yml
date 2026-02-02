@@ -26,7 +26,7 @@ jobs:
       - name: Build
         run: cd apps/belac-website/frontend && npm run build
       
-      - name: Deploy to Cloudflare
+      - name: Deploy to Cloudflare Pages
         run: |
           npm install -g wrangler
           cd apps/belac-website/frontend
@@ -37,12 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      
       - name: Deploy to Railway
         run: |
           npm install -g @railway/cli
-          railway up --service belac-backend --cwd apps/belac-website/backend
+          cd apps/belac-website/backend
+          railway up --service belac-backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
