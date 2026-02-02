@@ -36,6 +36,17 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `)
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS calorie_entries (
+        id SERIAL PRIMARY KEY,
+        food VARCHAR(255) NOT NULL,
+        calories DECIMAL(10, 2) NOT NULL,
+        protein DECIMAL(10, 2) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        date DATE DEFAULT CURRENT_DATE
+      );
+    `)
     
     console.log('Database initialized')
   } catch (error) {
@@ -141,6 +152,50 @@ app.get('/api/community-posts', async (req, res) => {
       posts: [],
       stats: { totalPosts: 0, totalEngagement: 0, communityMembers: 0 }
     })
+  }
+})
+
+// Calorie Counter Endpoints
+app.get('/api/entries', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, food, calories, protein, created_at FROM calorie_entries WHERE date = CURRENT_DATE ORDER BY created_at DESC'
+    )
+    res.json({ entries: result.rows, count: result.rows.length })
+  } catch (error) {
+    console.error('Error fetching entries:', error)
+    res.status(500).json({ error: 'Failed to fetch entries' })
+  }
+})
+
+app.post('/api/entries', async (req, res) => {
+  const { food, calories, protein } = req.body
+
+  if (!food || calories === undefined || protein === undefined) {
+    return res.status(400).json({ error: 'Missing required fields' })
+  }
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO calorie_entries (food, calories, protein) VALUES ($1, $2, $3) RETURNING id, food, calories, protein, created_at',
+      [food.trim(), parseFloat(calories), parseFloat(protein)]
+    )
+    res.json({ success: true, entry: result.rows[0] })
+  } catch (error) {
+    console.error('Error creating entry:', error)
+    res.status(500).json({ error: 'Failed to create entry' })
+  }
+})
+
+app.delete('/api/entries/:id', async (req, res) => {
+  const { id } = req.params
+
+  try {
+    await pool.query('DELETE FROM calorie_entries WHERE id = $1', [id])
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting entry:', error)
+    res.status(500).json({ error: 'Failed to delete entry' })
   }
 })
 

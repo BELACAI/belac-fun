@@ -9,10 +9,5 @@ vars = { BACKEND_URL = "https://belac-fun.up.railway.app" }
 [env.development]
 vars = { BACKEND_URL = "http://localhost:3000" }
 
-# Serve frontend static files
 [site]
 bucket = "../frontend/dist"
-
-[[env.production.routes]]
-pattern = "calorie-counter.calebbadassbelac.workers.dev/*"
-zone_name = "calebbadassbelac.workers.dev"
