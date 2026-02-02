@@ -61,7 +61,7 @@ export default function App() {
             </div>
             <div className="hero-right">
               <img 
-                src="https://pub-263f4927a6df4831af52e0a7236d300c.r2.dev/HAI3oicbYAAif8w.png" 
+                src="https://pub-263f4927a6df4831af52e0a7236d300c.r2.dev/belacai/HAI3oicbYAAif8w.png" 
                 alt="Belac"
                 className="hero-image"
               />
