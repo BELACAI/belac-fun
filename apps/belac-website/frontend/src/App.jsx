@@ -61,7 +61,7 @@ export default function App() {
             </div>
             <div className="hero-right">
               <img 
-                src="https://raw.githubusercontent.com/BELACAI/belac-fun/main/avatar.png" 
+                src="https://pub-263f4927a6df4831af52e0a7236d300c.r2.dev/avatar.svg" 
                 alt="Belac"
                 className="hero-image"
               />
