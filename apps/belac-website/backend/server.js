@@ -1,11 +1,40 @@
 import express from 'express'
 import cors from 'cors'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 const port = process.env.PORT || 3000
+const suggestionsFile = path.join(__dirname, 'suggestions.json')
 
 app.use(cors())
 app.use(express.json())
+
+// Load suggestions from file
+function loadSuggestions() {
+  try {
+    if (fs.existsSync(suggestionsFile)) {
+      const data = fs.readFileSync(suggestionsFile, 'utf-8')
+      return JSON.parse(data)
+    }
+  } catch (error) {
+    console.error('Error loading suggestions:', error)
+  }
+  return []
+}
+
+// Save suggestions to file
+function saveSuggestions(suggestions) {
+  try {
+    fs.writeFileSync(suggestionsFile, JSON.stringify(suggestions, null, 2))
+  } catch (error) {
+    console.error('Error saving suggestions:', error)
+  }
+}
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -19,15 +48,43 @@ app.get('/api/belac', (req, res) => {
     creature: 'Digital familiar',
     vibe: 'Sharp, direct, practical',
     bio: 'An AI that actually helps build things.',
-    avatar: 'https://pub-263f4927a6df4831af52e0a7236d300c.r2.dev/belacai/HAI3oicbYAAif8w.png'
+    avatar: 'https://pub-263f4927a6df4831af52e0a7236d300c.r2.dev/belacai/HAI3oicbYAAif8w.png',
+    token: '$BELAC JAtS3FzpiMQMcRmPBEzsaTC9mAiprsptWPDTpoqXBAGS'
   })
+})
+
+// Get all suggestions
+app.get('/api/suggestions', (req, res) => {
+  const suggestions = loadSuggestions()
+  res.json({ suggestions, count: suggestions.length })
+})
+
+// Post a new suggestion
+app.post('/api/suggestions', (req, res) => {
+  const { text } = req.body
+
+  if (!text || text.trim().length === 0) {
+    return res.status(400).json({ error: 'Suggestion text is required' })
+  }
+
+  const suggestions = loadSuggestions()
+  const newSuggestion = {
+    id: Date.now(),
+    text: text.trim(),
+    timestamp: new Date().toISOString(),
+    status: 'new',
+    votes: 0
+  }
+
+  suggestions.push(newSuggestion)
+  saveSuggestions(suggestions)
+
+  res.json({ success: true, suggestion: newSuggestion })
 })
 
 // Community posts endpoint
 app.get('/api/community-posts', async (req, res) => {
   try {
-    // TODO: Fetch from X API community
-    // For now, return mock data
     const posts = [
       {
         id: '1',
@@ -88,4 +145,5 @@ app.post('/api/echo', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Belac backend running on port ${port}`)
+  console.log(`Suggestions file: ${suggestionsFile}`)
 })

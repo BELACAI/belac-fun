@@ -725,6 +725,7 @@ html, body {
 
 /* Footer */
 .footer {
+  display: none;
   text-align: center;
   padding: 2rem;
   border-top: 1px solid rgba(14, 165, 233, 0.1);
@@ -732,6 +733,12 @@ html, body {
   font-size: 0.95rem;
   position: relative;
   z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    display: block;
+  }
 }
 
 /* Responsive */

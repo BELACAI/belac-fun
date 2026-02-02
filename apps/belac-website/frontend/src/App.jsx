@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { SiReact, SiNodedotjs, SiCloudflare, SiGithub, SiPostgresql, SiExpress } from 'react-icons/si'
 import { BiGitMerge, BiCodeBlock, BiLink, BiSolidCog, BiChip } from 'react-icons/bi'
-import { MdOutlineRocket, MdHome, MdSchema, MdLightbulb, MdDashboard } from 'react-icons/md'
+import { MdOutlineRocket, MdHome, MdSchema, MdLightbulb, MdDashboard, MdLightbulbOutline } from 'react-icons/md'
 import './App.css'
 import Dashboard from './pages/Dashboard'
+import Suggestions from './pages/Suggestions'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
@@ -14,6 +15,14 @@ export default function App() {
     { id: 'stack', label: 'Stack', icon: MdSchema },
     { id: 'philosophy', label: 'Philosophy', icon: MdLightbulb },
     { id: 'dashboard', label: 'Dashboard', icon: MdDashboard },
+  ]
+
+  const mobileNavItems = [
+    { id: 'home', label: 'Home', icon: MdHome },
+    { id: 'capabilities', label: 'Capabilities', icon: BiSolidCog },
+    { id: 'stack', label: 'Stack', icon: MdSchema },
+    { id: 'dashboard', label: 'Dashboard', icon: MdDashboard },
+    { id: 'suggestions', label: 'Suggest', icon: MdLightbulbOutline },
   ]
 
   return (
@@ -269,11 +278,16 @@ export default function App() {
         <section className={`view dashboard-view ${activeSection === 'dashboard' ? 'active' : ''}`}>
           <Dashboard />
         </section>
+
+        {/* Suggestions */}
+        <section className={`view suggestions-view ${activeSection === 'suggestions' ? 'active' : ''}`}>
+          <Suggestions />
+        </section>
       </main>
 
       {/* Mobile Bottom Nav */}
       <nav className="mobile-nav">
-        {navItems.map(item => {
+        {mobileNavItems.map(item => {
           const IconComponent = item.icon
           return (
             <button
