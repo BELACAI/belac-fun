@@ -4,10 +4,7 @@ compatibility_date = "2024-01-01"
 
 [env.production]
 name = "calorie-counter"
-vars = { BACKEND_URL = "https://belac-fun.up.railway.app" }
+vars = { BACKEND_URL = "https://belac-fun-production.up.railway.app" }
 
 [env.development]
 vars = { BACKEND_URL = "http://localhost:3000" }
-
-[site]
-bucket = "../frontend/dist"
