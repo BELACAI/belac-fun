@@ -1,0 +1,108 @@
+.apps-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.app-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Courier New', monospace;
+  color: var(--text);
+}
+
+.app-tile:hover {
+  background: var(--hover);
+}
+
+.app-tile svg {
+  color: var(--text);
+}
+
+.app-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.app-name {
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.app-status {
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 0.5px;
+}
+
+.request-tile {
+  border: 1px dashed var(--border);
+}
+
+.request-section {
+  border: 1px solid var(--border);
+  padding: 2rem;
+  background: var(--hover);
+}
+
+.request-section h3 {
+  margin-bottom: 1rem;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.request-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.request-input::placeholder {
+  color: #666;
+}
+
+.request-input:focus {
+  outline: none;
+  border: 1px solid var(--text);
+}
+
+.request-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.request-btn:hover {
+  background: var(--text);
+  color: var(--bg);
+}

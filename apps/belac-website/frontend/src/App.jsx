@@ -5,31 +5,27 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { clusterApiUrl } from '@solana/web3.js'
 import { registerMwa, createDefaultAuthorizationCache, createDefaultChainSelector, createDefaultWalletNotFoundHandler } from '@solana-mobile/wallet-standard-mobile'
 import '@solana/wallet-adapter-react-ui/styles.css'
-import Header from './components/Header'
 import Sidebar from './components/Sidebar'
-import Home from './pages/Home'
-import Marketplace from './pages/Marketplace'
-import CalorieCounter from './apps/CalorieCounter'
-import Dashboard from './pages/Dashboard'
-import Suggestions from './pages/Suggestions'
+import Header from './components/Header'
+import Apps from './pages/Apps'
+import Upcoming from './pages/Upcoming'
+import Stake from './pages/Stake'
+import Profile from './pages/Profile'
+import Token from './pages/Token'
 import './App.css'
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('home')
-  const [network, setNetwork] = useState(WalletAdapterNetwork.Mainnet)
+  const [activeSection, setActiveSection] = useState('apps')
   const [endpoint, setEndpoint] = useState('')
 
-  // Initialize Solana network endpoint
+  // Initialize Solana network
   useEffect(() => {
     const selectedNetwork = process.env.REACT_APP_SOLANA_NETWORK || 'mainnet-beta'
-    setNetwork(selectedNetwork)
-    
     const rpcUrl = process.env.REACT_APP_SOLANA_RPC_URL || clusterApiUrl(selectedNetwork)
     setEndpoint(rpcUrl)
   }, [])
 
-  // Register Mobile Wallet Adapter for Android Chrome ONLY
+  // Register MWA for Android Chrome
   useEffect(() => {
     if (typeof window === 'undefined') return
 
@@ -38,66 +34,43 @@ export default function App() {
 
     if (isAndroid && isChrome) {
       try {
-        const origin = window.location.origin
         registerMwa({
           appIdentity: {
             name: 'Belac OS',
-            uri: origin,
-            icon: '/belac-logo.png',
+            uri: window.location.origin,
+            icon: '/logo.png',
           },
           authorizationCache: createDefaultAuthorizationCache(),
           chains: ['solana:mainnet-beta', 'solana:devnet'],
           chainSelector: createDefaultChainSelector(),
           onWalletNotFound: createDefaultWalletNotFoundHandler(),
         })
-        console.log('✅ Mobile Wallet Adapter registered for Android Chrome')
       } catch (error) {
-        console.error('❌ MWA registration failed:', error)
+        console.error('MWA registration failed:', error)
       }
     }
   }, [])
 
-  // Empty wallets array - Wallet Standard will auto-detect wallets
-  // (Phantom, Solflare on desktop, Seeker via MWA on Android Chrome)
   const wallets = []
 
-  const sections = [
-    { id: 'home', label: 'Home', icon: '🏠' },
-    { id: 'marketplace', label: 'Apps', icon: '🚀' },
-    { id: 'calories', label: 'Calories', icon: '📊' },
-    { id: 'dashboard', label: 'Dashboard', icon: '📈' },
-    { id: 'suggestions', label: 'Suggest', icon: '💡' },
-  ]
-
   if (!endpoint) {
-    return <div>Loading...</div>
+    return <div style={{ background: '#000', color: '#fff' }}>Loading...</div>
   }
 
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <div className="belac-os">
-            <Header 
-              onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-              activeSection={activeSection}
-            />
-            <div className="os-container">
-              <Sidebar 
-                sections={sections}
-                activeSection={activeSection}
-                onSelect={(id) => {
-                  setActiveSection(id)
-                  setSidebarOpen(false)
-                }}
-                isOpen={sidebarOpen}
-              />
-              <main className="os-main">
-                {activeSection === 'home' && <Home />}
-                {activeSection === 'marketplace' && <Marketplace />}
-                {activeSection === 'calories' && <CalorieCounter />}
-                {activeSection === 'dashboard' && <Dashboard />}
-                {activeSection === 'suggestions' && <Suggestions />}
+          <div className="belac-app">
+            <Sidebar activeSection={activeSection} onSelect={setActiveSection} />
+            <div className="belac-main">
+              <Header section={activeSection} />
+              <main className="belac-content">
+                {activeSection === 'token' && <Token />}
+                {activeSection === 'apps' && <Apps />}
+                {activeSection === 'upcoming' && <Upcoming />}
+                {activeSection === 'stake' && <Stake />}
+                {activeSection === 'profile' && <Profile />}
               </main>
             </div>
           </div>

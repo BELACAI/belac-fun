@@ -1,0 +1,112 @@
+.calorie-app {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.form-row input::placeholder {
+  color: #666;
+}
+
+.form-row input:focus {
+  outline: none;
+  border: 1px solid var(--text);
+}
+
+.form-row button {
+  padding: 0.5rem 1.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.form-row button:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 12px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  background: var(--hover);
+}
+
+.stats div {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.entries {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+table tr {
+  border-bottom: 1px solid var(--border);
+}
+
+table td {
+  padding: 0.75rem;
+  border-right: 1px solid var(--border);
+}
+
+table td:last-child {
+  border-right: none;
+}
+
+table tr:hover {
+  background: var(--hover);
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  padding: 0.25rem 0.5rem;
+}
+
+.delete-btn:hover {
+  color: #ff6b6b;
+}

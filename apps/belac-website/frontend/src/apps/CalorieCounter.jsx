@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import './CalorieCounter.css'
 
-const API_URL = 'https://calorie-counter.calebbadassbelac.workers.dev/api/entries'
+const API_URL = 'https://belac-fun-production.up.railway.app/api/entries'
 
 export default function CalorieCounter() {
   const [entries, setEntries] = useState([])
@@ -23,7 +24,7 @@ export default function CalorieCounter() {
       setEntries(data.entries || [])
     } catch (error) {
       console.error('Error fetching entries:', error)
-      setError('Failed to load entries. Check your connection.')
+      setError('Failed to load entries.')
     } finally {
       setLoading(false)
     }
@@ -58,7 +59,7 @@ export default function CalorieCounter() {
       }
     } catch (error) {
       console.error('Error adding entry:', error)
-      setError('Failed to add entry. Try again.')
+      setError('Failed to add entry.')
     }
   }
 
@@ -76,77 +77,63 @@ export default function CalorieCounter() {
   const totalProtein = entries.reduce((sum, e) => sum + parseFloat(e.protein || 0), 0)
 
   return (
-    <div className="section-container calorie-container">
-      <div className="section-header">
-        <h2>📊 Calorie Counter</h2>
-        <p>Track your daily nutrition</p>
-      </div>
-
-      <form onSubmit={addEntry} className="calorie-form">
-        <div className="form-group">
+    <div className="calorie-app">
+      <form onSubmit={addEntry} className="entry-form">
+        <div className="form-row">
           <input
             type="text"
-            placeholder="Food name"
+            placeholder="Food"
             value={food}
             onChange={(e) => setFood(e.target.value)}
-            maxLength="100"
+            maxLength="50"
           />
           <input
             type="number"
-            placeholder="Calories"
+            placeholder="Cal"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
             step="0.1"
           />
           <input
             type="number"
-            placeholder="Protein (g)"
+            placeholder="Protein"
             value={protein}
             onChange={(e) => setProtein(e.target.value)}
             step="0.1"
           />
+          <button type="submit">Add</button>
         </div>
-        {error && <p className="error-text">{error}</p>}
-        <button type="submit" className="btn btn-primary">
-          <span>Add Entry</span>
-        </button>
+        {error && <p className="error">{error}</p>}
       </form>
 
-      <div className="calorie-summary">
-        <h3>Today's Summary</h3>
-        <div className="summary-stats">
-          <div className="summary-stat">
-            <div className="stat-value">{totalCalories.toFixed(0)}</div>
-            <div className="stat-label">Total Calories (kcal)</div>
-          </div>
-          <div className="summary-stat">
-            <div className="stat-value">{totalProtein.toFixed(1)}</div>
-            <div className="stat-label">Total Protein (g)</div>
-          </div>
-        </div>
+      <div className="stats">
+        <div>Calories: {totalCalories.toFixed(0)} kcal</div>
+        <div>Protein: {totalProtein.toFixed(1)}g</div>
       </div>
 
-      <div className="calorie-entries">
-        <h3>Today's Entries ({entries.length})</h3>
-        {loading && <p>Loading...</p>}
-        {entries.length === 0 && !loading && <p>No entries yet. Add one above!</p>}
-        <ul className="entries-list">
-          {entries.map((entry) => (
-            <li key={entry.id} className="entry-item">
-              <div className="entry-info">
-                <strong>{entry.food}</strong>
-                <span className="entry-details">{entry.calories} cal • {entry.protein}g protein</span>
-              </div>
-              <button
-                onClick={() => deleteEntry(entry.id)}
-                className="btn-delete"
-                title="Delete"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="entries">
+        {loading ? (
+          <p>Loading...</p>
+        ) : entries.length === 0 ? (
+          <p>No entries yet</p>
+        ) : (
+          <table>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry.id} className="entry-row">
+                  <td>{entry.food}</td>
+                  <td>{entry.calories} cal</td>
+                  <td>{entry.protein}g</td>
+                  <td>
+                    <button onClick={() => deleteEntry(entry.id)} className="delete-btn">
+                      ✕
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
