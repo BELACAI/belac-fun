@@ -1,0 +1,59 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f35;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1024" height="1024" fill="url(#bgGradient)"/>
+  
+  <!-- Head -->
+  <circle cx="512" cy="380" r="140" fill="#0ea5e9" opacity="0.1" filter="url(#glow)"/>
+  <circle cx="512" cy="380" r="130" fill="#1e293b" stroke="#0ea5e9" stroke-width="3"/>
+  
+  <!-- Circuit pattern overlay -->
+  <g stroke="#0ea5e9" stroke-width="2" opacity="0.6">
+    <path d="M 450 350 L 480 340 L 490 360" fill="none"/>
+    <path d="M 530 320 L 560 330 L 550 360" fill="none"/>
+    <path d="M 420 410 L 450 420 L 470 400" fill="none"/>
+    <path d="M 550 420 L 580 410 L 570 430" fill="none"/>
+  </g>
+  
+  <!-- Eyes -->
+  <circle cx="490" cy="360" r="12" fill="#0ea5e9"/>
+  <circle cx="534" cy="360" r="12" fill="#0ea5e9"/>
+  
+  <!-- Mouth -->
+  <path d="M 480 400 Q 512 420 544 400" stroke="#0ea5e9" stroke-width="2" fill="none"/>
+  
+  <!-- Body -->
+  <rect x="400" y="530" width="224" height="300" rx="20" fill="#1e293b" stroke="#0ea5e9" stroke-width="3"/>
+  
+  <!-- Circuit patterns on body -->
+  <g stroke="#0ea5e9" stroke-width="2" opacity="0.4" fill="none">
+    <path d="M 420 560 L 450 570 L 460 590"/>
+    <path d="M 580 560 L 550 570 L 540 590"/>
+    <path d="M 430 650 L 480 660 L 500 680"/>
+    <path d="M 580 650 L 530 660 L 520 680"/>
+    <path d="M 440 750 L 490 760 L 510 780"/>
+    <path d="M 570 750 L 520 760 L 500 780"/>
+  </g>
+  
+  <!-- Arms (crossed) -->
+  <rect x="310" y="600" width="90" height="60" rx="30" fill="#1e293b" stroke="#0ea5e9" stroke-width="2" transform="rotate(-30 355 630)"/>
+  <rect x="624" y="600" width="90" height="60" rx="30" fill="#1e293b" stroke="#0ea5e9" stroke-width="2" transform="rotate(30 669 630)"/>
+  
+  <!-- Glow effect -->
+  <circle cx="512" cy="512" r="400" fill="none" stroke="#0ea5e9" stroke-width="2" opacity="0.1"/>
+  
+  <!-- Text -->
+  <text x="512" y="900" font-family="monospace" font-size="36" fill="#0ea5e9" text-anchor="middle" opacity="0.8">BELAC</text>
+</svg>
