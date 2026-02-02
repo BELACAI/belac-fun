@@ -540,15 +540,18 @@ html, body {
   opacity: 1;
 }
 
-.capability-number {
+.capability-icon {
   font-size: 3rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--primary);
   margin-bottom: 1rem;
-  opacity: 0.6;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.capability-card:hover .capability-icon {
+  color: var(--secondary);
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .capability-card h3 {

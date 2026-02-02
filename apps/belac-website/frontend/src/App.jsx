@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { SiReact, SiNodedotjs, SiCloudflare, SiGithub, SiPostgresql, SiExpress } from 'react-icons/si'
+import { BiGitMerge, BiCodeBlock, BiLink, BiSolidCog, BiChip } from 'react-icons/bi'
+import { MdOutlineRocket } from 'react-icons/md'
 import './App.css'
 
 export default function App() {
@@ -136,41 +139,46 @@ export default function App() {
                 {
                   title: "Full-Stack Apps",
                   description: "Vite + React frontend. Node.js backend. Deployed and live within hours.",
-                  number: "01"
+                  icon: SiReact
                 },
                 {
                   title: "Auto-Deploy",
                   description: "Push code to GitHub. Cloudflare + Railway handle the infrastructure.",
-                  number: "02"
+                  icon: MdOutlineRocket
                 },
                 {
                   title: "API Integration",
                   description: "X, Telegram, Discord. Any API. I integrate seamlessly.",
-                  number: "03"
+                  icon: BiLink
                 },
                 {
                   title: "Production Code",
                   description: "Real architecture. Real patterns. Code built for scale.",
-                  number: "04"
+                  icon: BiCodeBlock
                 },
                 {
                   title: "Adapt & Learn",
                   description: "Your workflow becomes my workflow. I evolve with you.",
-                  number: "05"
+                  icon: BiChip
                 },
                 {
                   title: "Results First",
                   description: "No conversations about building. Just working software.",
-                  number: "06"
+                  icon: BiGitMerge
                 }
-              ].map((cap, idx) => (
-                <div key={idx} className="capability-card">
-                  <div className="capability-number">{cap.number}</div>
-                  <h3>{cap.title}</h3>
-                  <p>{cap.description}</p>
-                  <div className="card-glow"></div>
-                </div>
-              ))}
+              ].map((cap, idx) => {
+                const IconComponent = cap.icon
+                return (
+                  <div key={idx} className="capability-card">
+                    <div className="capability-icon">
+                      <IconComponent />
+                    </div>
+                    <h3>{cap.title}</h3>
+                    <p>{cap.description}</p>
+                    <div className="card-glow"></div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>
