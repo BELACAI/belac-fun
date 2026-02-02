@@ -22,7 +22,7 @@ export default function App() {
 
   // Initialize Solana network endpoint
   useEffect(() => {
-    const selectedNetwork = (process.env.REACT_APP_SOLANA_NETWORK || 'mainnet-beta') as WalletAdapterNetwork
+    const selectedNetwork = process.env.REACT_APP_SOLANA_NETWORK || 'mainnet-beta'
     setNetwork(selectedNetwork)
     
     const rpcUrl = process.env.REACT_APP_SOLANA_RPC_URL || clusterApiUrl(selectedNetwork)
