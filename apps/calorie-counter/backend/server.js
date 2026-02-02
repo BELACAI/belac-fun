@@ -1,86 +1,113 @@
 import express from 'express'
 import cors from 'cors'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import pg from 'pg'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const { Pool } = pg
 
 const app = express()
 const port = process.env.PORT || 3000
-const dataFile = path.join(__dirname, 'entries.json')
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:TThUlTbUwJYVDgMWWiKOgsKcbLtoNoFk@switchyard.proxy.rlwy.net:45864/railway'
+})
 
 app.use(cors())
 app.use(express.json())
 
-// Load entries
-function loadEntries() {
+// Initialize database tables
+async function initDB() {
   try {
-    if (fs.existsSync(dataFile)) {
-      const data = fs.readFileSync(dataFile, 'utf-8')
-      return JSON.parse(data)
-    }
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS calorie_entries (
+        id SERIAL PRIMARY KEY,
+        food VARCHAR(255) NOT NULL,
+        calories DECIMAL(10, 2) NOT NULL,
+        protein DECIMAL(10, 2) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        date DATE DEFAULT CURRENT_DATE
+      );
+    `)
+    
+    console.log('Calorie Counter database initialized')
   } catch (error) {
-    console.error('Error loading entries:', error)
+    console.error('Database init error:', error)
   }
-  return []
 }
 
-// Save entries
-function saveEntries(entries) {
-  try {
-    fs.writeFileSync(dataFile, JSON.stringify(entries, null, 2))
-  } catch (error) {
-    console.error('Error saving entries:', error)
-  }
-}
+initDB()
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'Calorie Counter' })
+  res.json({ 
+    status: 'ok', 
+    service: 'Calorie Counter',
+    timestamp: new Date().toISOString()
+  })
 })
 
-// Get all entries
-app.get('/api/entries', (req, res) => {
-  const entries = loadEntries()
-  res.json({ entries, total: entries.length })
+// Get all entries (today by default)
+app.get('/api/entries', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, food, calories, protein, created_at FROM calorie_entries WHERE date = CURRENT_DATE ORDER BY created_at DESC'
+    )
+    res.json({ entries: result.rows, count: result.rows.length })
+  } catch (error) {
+    console.error('Error fetching entries:', error)
+    res.status(500).json({ error: 'Failed to fetch entries' })
+  }
 })
 
 // Add entry
-app.post('/api/entries', (req, res) => {
+app.post('/api/entries', async (req, res) => {
   const { food, calories, protein } = req.body
 
   if (!food || calories === undefined || protein === undefined) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
-  const entries = loadEntries()
-  const newEntry = {
-    id: Date.now().toString(),
-    food,
-    calories: parseFloat(calories),
-    protein: parseFloat(protein),
-    timestamp: new Date().toISOString()
+  try {
+    const result = await pool.query(
+      'INSERT INTO calorie_entries (food, calories, protein) VALUES ($1, $2, $3) RETURNING id, food, calories, protein, created_at',
+      [food.trim(), parseFloat(calories), parseFloat(protein)]
+    )
+    res.json({ success: true, entry: result.rows[0] })
+  } catch (error) {
+    console.error('Error creating entry:', error)
+    res.status(500).json({ error: 'Failed to create entry' })
   }
-
-  entries.push(newEntry)
-  saveEntries(entries)
-
-  res.json({ success: true, entry: newEntry })
 })
 
 // Delete entry
-app.delete('/api/entries/:id', (req, res) => {
+app.delete('/api/entries/:id', async (req, res) => {
   const { id } = req.params
-  let entries = loadEntries()
 
-  entries = entries.filter(e => e.id !== id)
-  saveEntries(entries)
+  try {
+    await pool.query('DELETE FROM calorie_entries WHERE id = $1', [id])
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting entry:', error)
+    res.status(500).json({ error: 'Failed to delete entry' })
+  }
+})
 
-  res.json({ success: true })
+// Get entries for a specific date
+app.get('/api/entries/:date', async (req, res) => {
+  const { date } = req.params
+
+  try {
+    const result = await pool.query(
+      'SELECT id, food, calories, protein, created_at FROM calorie_entries WHERE date = $1 ORDER BY created_at DESC',
+      [date]
+    )
+    res.json({ entries: result.rows, count: result.rows.length })
+  } catch (error) {
+    console.error('Error fetching entries:', error)
+    res.status(500).json({ error: 'Failed to fetch entries' })
+  }
 })
 
 app.listen(port, () => {
   console.log(`Calorie Counter backend running on port ${port}`)
+  console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Railway PostgreSQL' : 'Using default connection'}`)
 })

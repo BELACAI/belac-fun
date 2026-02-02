@@ -1,46 +1,55 @@
 import express from 'express'
 import cors from 'cors'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import pg from 'pg'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const { Pool } = pg
 
 const app = express()
 const port = process.env.PORT || 3000
-const suggestionsFile = path.join(__dirname, 'suggestions.json')
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:TThUlTbUwJYVDgMWWiKOgsKcbLtoNoFk@switchyard.proxy.rlwy.net:45864/railway'
+})
 
 app.use(cors())
 app.use(express.json())
 
-// Load suggestions from file
-function loadSuggestions() {
+// Initialize database tables
+async function initDB() {
   try {
-    if (fs.existsSync(suggestionsFile)) {
-      const data = fs.readFileSync(suggestionsFile, 'utf-8')
-      return JSON.parse(data)
-    }
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS belac_suggestions (
+        id SERIAL PRIMARY KEY,
+        text TEXT NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status VARCHAR(20) DEFAULT 'new',
+        votes INT DEFAULT 0
+      );
+    `)
+    
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS belac_community_posts (
+        id SERIAL PRIMARY KEY,
+        author_id VARCHAR(255),
+        content TEXT NOT NULL,
+        engagement INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+    
+    console.log('Database initialized')
   } catch (error) {
-    console.error('Error loading suggestions:', error)
+    console.error('Database init error:', error)
   }
-  return []
 }
 
-// Save suggestions to file
-function saveSuggestions(suggestions) {
-  try {
-    fs.writeFileSync(suggestionsFile, JSON.stringify(suggestions, null, 2))
-  } catch (error) {
-    console.error('Error saving suggestions:', error)
-  }
-}
+initDB()
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
-    message: 'Belac is alive and deployed',
+    message: 'Belac website backend is alive',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production'
   })
@@ -59,38 +68,42 @@ app.get('/api/belac', (req, res) => {
 })
 
 // Get all suggestions
-app.get('/api/suggestions', (req, res) => {
-  const suggestions = loadSuggestions()
-  res.json({ suggestions, count: suggestions.length })
+app.get('/api/suggestions', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM belac_suggestions ORDER BY timestamp DESC')
+    res.json({ suggestions: result.rows, count: result.rows.length })
+  } catch (error) {
+    console.error('Error fetching suggestions:', error)
+    res.status(500).json({ error: 'Failed to fetch suggestions' })
+  }
 })
 
 // Post a new suggestion
-app.post('/api/suggestions', (req, res) => {
+app.post('/api/suggestions', async (req, res) => {
   const { text } = req.body
 
   if (!text || text.trim().length === 0) {
     return res.status(400).json({ error: 'Suggestion text is required' })
   }
 
-  const suggestions = loadSuggestions()
-  const newSuggestion = {
-    id: Date.now(),
-    text: text.trim(),
-    timestamp: new Date().toISOString(),
-    status: 'new',
-    votes: 0
+  try {
+    const result = await pool.query(
+      'INSERT INTO belac_suggestions (text) VALUES ($1) RETURNING *',
+      [text.trim()]
+    )
+    res.json({ success: true, suggestion: result.rows[0] })
+  } catch (error) {
+    console.error('Error creating suggestion:', error)
+    res.status(500).json({ error: 'Failed to create suggestion' })
   }
-
-  suggestions.push(newSuggestion)
-  saveSuggestions(suggestions)
-
-  res.json({ success: true, suggestion: newSuggestion })
 })
 
 // Community posts endpoint
 app.get('/api/community-posts', async (req, res) => {
   try {
-    const posts = [
+    const result = await pool.query('SELECT * FROM belac_community_posts ORDER BY created_at DESC LIMIT 10')
+    
+    const posts = result.rows.length > 0 ? result.rows : [
       {
         id: '1',
         author: 'Caleb',
@@ -112,25 +125,13 @@ app.get('/api/community-posts', async (req, res) => {
         likes: 450,
         replies: 120,
         reposts: 320
-      },
-      {
-        id: '3',
-        author: 'Another Member',
-        handle: 'founder',
-        avatar: '',
-        text: 'Elon was right. AI should build apps. Belac is proving it.',
-        timestamp: '45 minutes ago',
-        likes: 890,
-        replies: 230,
-        reposts: 560
       }
     ]
 
     const stats = {
       totalPosts: posts.length,
-      totalEngagement: posts.reduce((sum, p) => sum + p.likes + p.replies + p.reposts, 0),
-      communityMembers: 500,
-      topPost: posts[0]?.text || ''
+      totalEngagement: posts.reduce((sum, p) => sum + (p.likes || 0) + (p.replies || 0) + (p.reposts || 0), 0),
+      communityMembers: 500
     }
 
     res.json({ posts, stats })
@@ -149,6 +150,6 @@ app.post('/api/echo', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Belac backend running on port ${port}`)
-  console.log(`Suggestions file: ${suggestionsFile}`)
+  console.log(`Belac website backend running on port ${port}`)
+  console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Railway PostgreSQL' : 'Using default connection'}`)
 })
