@@ -1,15 +1,15 @@
 {
-  "name": "calorie-counter-backend",
+  "name": "calorie-counter-worker",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
     "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "wrangler": "^3.45.0"
   }
 }
