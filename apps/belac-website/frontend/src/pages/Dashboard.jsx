@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './Dashboard.css'
 
+const API_URL = 'https://belac-fun-production.up.railway.app/api/community-posts'
+
 export default function Dashboard() {
   const [posts, setPosts] = useState([])
   const [stats, setStats] = useState({
@@ -19,7 +21,7 @@ export default function Dashboard() {
   const fetchCommunityData = async () => {
     try {
       // Fetch from backend API
-      const response = await fetch('/api/community-posts')
+      const response = await fetch(API_URL)
       if (response.ok) {
         const data = await response.json()
         setPosts(data.posts || [])

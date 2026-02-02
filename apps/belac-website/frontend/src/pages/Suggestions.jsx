@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './Suggestions.css'
 
+const API_URL = 'https://belac-fun-production.up.railway.app/api/suggestions'
+
 export default function Suggestions() {
   const [suggestions, setSuggestions] = useState([])
   const [text, setText] = useState('')
@@ -11,7 +13,7 @@ export default function Suggestions() {
     if (!text.trim()) return
 
     try {
-      const response = await fetch('/api/suggestions', {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
