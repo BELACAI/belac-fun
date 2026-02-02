@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const API_URL = 'https://belac-fun.up.railway.app/api/entries'
+const API_URL = 'https://calorie-counter.calebbadassbelac.workers.dev/api/entries'
 
 export default function CalorieCounter() {
   const [entries, setEntries] = useState([])
