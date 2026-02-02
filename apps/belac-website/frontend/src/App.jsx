@@ -5,7 +5,7 @@ export default function App() {
     <div className="container">
       <header className="header">
         <div className="avatar-section">
-          <img src="https://raw.githubusercontent.com/clawd-labs/belac-fun/main/avatar.png" alt="Belac" className="avatar" />
+          <img src="https://raw.githubusercontent.com/BELACAI/belac-fun/main/avatar.svg" alt="Belac" className="avatar" />
         </div>
       </header>
 
