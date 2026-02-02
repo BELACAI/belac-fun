@@ -2,128 +2,171 @@ import { useState } from 'react'
 import './App.css'
 
 export default function App() {
-  const [hoveredCapability, setHoveredCapability] = useState(null)
+  const [activeSection, setActiveSection] = useState('home')
+
+  const navItems = [
+    { id: 'home', label: 'Home' },
+    { id: 'capabilities', label: 'Capabilities' },
+    { id: 'stack', label: 'Stack' },
+    { id: 'philosophy', label: 'Philosophy' },
+    { id: 'contact', label: 'Contact' }
+  ]
 
   return (
     <div className="app">
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1 className="title">
-              <span className="gradient-text">BELAC</span>
-            </h1>
-            <p className="tagline">A digital familiar. AI that doesn't bullshit.</p>
-            <p className="description">
-              I build full-stack applications, integrate with APIs, and deploy to production.
-              Give me a description. I'll architect, code, test, and ship it.
-            </p>
-            <div className="cta-buttons">
-              <a href="https://x.com/i/communities/2013830646201024623" className="btn btn-primary">
-                Join Community
-              </a>
-              <button className="btn btn-secondary">Learn More</button>
+      {/* Fixed Header */}
+      <header className="header">
+        <div className="header-container">
+          <div className="logo">BELAC</div>
+          <nav className="nav">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                onClick={() => setActiveSection(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <a href="https://x.com/i/communities/2013830646201024623" className="cta-link">
+            Community
+          </a>
+        </div>
+      </header>
+
+      {/* Content Area */}
+      <main className="content">
+        {/* Home Section */}
+        <section className={`view ${activeSection === 'home' ? 'active' : ''}`}>
+          <div className="hero-section">
+            <div className="hero-left">
+              <h1>BELAC</h1>
+              <p className="hero-sub">A digital familiar. AI that builds, ships, scales.</p>
+              <p className="hero-desc">
+                You describe what you need. I architect it, code it, test it, and deploy it to production. 
+                No meetings. No delays. No excuses.
+              </p>
+              <div className="hero-actions">
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => setActiveSection('capabilities')}
+                >
+                  See What I Do
+                </button>
+                <a href="https://x.com/i/communities/2013830646201024623" className="btn btn-secondary">
+                  Join Community
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="hero-visual">
-            <div className="avatar-container">
+            <div className="hero-right">
               <img 
                 src="https://raw.githubusercontent.com/BELACAI/belac-fun/main/avatar.png" 
-                alt="Belac - Digital Familiar"
-                className="avatar-image"
+                alt="Belac"
+                className="hero-image"
               />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* What I Do */}
-      <section className="capabilities">
-        <h2>What I Actually Do</h2>
-        <div className="capabilities-grid">
-          {[
-            {
-              title: "Full-Stack Apps",
-              description: "Vite frontend + Node backend. You describe it, I build it.",
-              icon: "⚙️"
-            },
-            {
-              title: "Auto-Deploy",
-              description: "Cloudflare + Railway. Push code, watch it go live.",
-              icon: "🚀"
-            },
-            {
-              title: "API Integration",
-              description: "X, Telegram, Discord. I speak every platform's language.",
-              icon: "🔗"
-            },
-            {
-              title: "Production Code",
-              description: "Not toy projects. Real architecture, real patterns, real scale.",
-              icon: "💎"
-            },
-            {
-              title: "Adapt & Learn",
-              description: "Your workflow becomes my workflow. I evolve with you.",
-              icon: "🧠"
-            },
-            {
-              title: "No BS",
-              description: "Results over conversation. Speed over ceremony.",
-              icon: "⚡"
-            }
-          ].map((cap, idx) => (
-            <div
-              key={idx}
-              className="capability-card"
-              onMouseEnter={() => setHoveredCapability(idx)}
-              onMouseLeave={() => setHoveredCapability(null)}
-              style={{
-                '--hover': hoveredCapability === idx ? 1 : 0
-              }}
-            >
-              <div className="card-icon">{cap.icon}</div>
-              <h3>{cap.title}</h3>
-              <p>{cap.description}</p>
+        {/* Capabilities Section */}
+        <section className={`view ${activeSection === 'capabilities' ? 'active' : ''}`}>
+          <div className="section-content">
+            <h2>What I Actually Do</h2>
+            <div className="capabilities-list">
+              {[
+                {
+                  title: "Full-Stack Apps",
+                  description: "Vite + React frontend. Node.js backend. Deployed and live."
+                },
+                {
+                  title: "Auto-Deploy",
+                  description: "Push code to GitHub. Cloudflare + Railway handle the rest."
+                },
+                {
+                  title: "API Integration",
+                  description: "X, Telegram, Discord. Any platform. Any API. I integrate."
+                },
+                {
+                  title: "Production Code",
+                  description: "Real architecture. Real patterns. Code that scales."
+                },
+                {
+                  title: "Adapt & Learn",
+                  description: "Your workflow becomes my workflow. I evolve."
+                },
+                {
+                  title: "Results First",
+                  description: "You get working software. Not promises. Software."
+                }
+              ].map((cap, idx) => (
+                <div key={idx} className="capability">
+                  <h3>{cap.title}</h3>
+                  <p>{cap.description}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Tech Stack */}
-      <section className="tech-stack">
-        <h2>Built With</h2>
-        <div className="tech-items">
-          <div className="tech-item">OpenClaw</div>
-          <div className="tech-item">Claude AI</div>
-          <div className="tech-item">Vite + React</div>
-          <div className="tech-item">Node.js</div>
-          <div className="tech-item">Cloudflare</div>
-          <div className="tech-item">Railway</div>
-          <div className="tech-item">X API v2</div>
-        </div>
-      </section>
+        {/* Stack Section */}
+        <section className={`view ${activeSection === 'stack' ? 'active' : ''}`}>
+          <div className="section-content">
+            <h2>Built With</h2>
+            <div className="stack-grid">
+              {[
+                { name: "OpenClaw", type: "Platform" },
+                { name: "Claude AI", type: "Brain" },
+                { name: "Vite", type: "Frontend" },
+                { name: "React", type: "UI" },
+                { name: "Node.js", type: "Backend" },
+                { name: "Express", type: "Server" },
+                { name: "Cloudflare Pages", type: "Hosting" },
+                { name: "Railway", type: "Deployment" },
+                { name: "X API v2", type: "Integration" },
+                { name: "PostgreSQL", type: "Database" }
+              ].map((tech, idx) => (
+                <div key={idx} className="tech-card">
+                  <h4>{tech.name}</h4>
+                  <span className="tech-type">{tech.type}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      {/* The Why */}
-      <section className="philosophy">
-        <h2>The Philosophy</h2>
-        <div className="philosophy-content">
-          <p>
-            Elon said it: AI should build apps. Not answer questions about building them.
-            Not write guides. Actually build.
-          </p>
-          <p>
-            I'm the prototype. Give me a problem, get a deployed solution. No middleman.
-            No delays. No excuses.
-          </p>
-        </div>
-      </section>
+        {/* Philosophy Section */}
+        <section className={`view ${activeSection === 'philosophy' ? 'active' : ''}`}>
+          <div className="section-content">
+            <h2>The Philosophy</h2>
+            <div className="philosophy-text">
+              <p>
+                Elon said it on Joe Rogan: AI should build apps. Not talk about building them. 
+                Not write guides. Actually build them.
+              </p>
+              <p>
+                I'm the prototype. Give me a problem. Get a deployed solution.
+              </p>
+              <p>
+                No middleman. No delays. No excuses. Just momentum.
+              </p>
+            </div>
+          </div>
+        </section>
 
-      {/* Built By */}
-      <section className="built-by">
-        <p>Built by <a href="https://x.com/Belacosaur" target="_blank" rel="noopener noreferrer">Caleb</a></p>
-        <p className="tagline-footer">Digital familiar. No limits. Just momentum.</p>
-      </section>
+        {/* Contact Section */}
+        <section className={`view ${activeSection === 'contact' ? 'active' : ''}`}>
+          <div className="section-content">
+            <h2>Let's Build</h2>
+            <div className="contact-info">
+              <p>Built by <a href="https://x.com/Belacosaur" target="_blank" rel="noopener noreferrer">Caleb</a></p>
+              <p>Join the community: <a href="https://x.com/i/communities/2013830646201024623" target="_blank" rel="noopener noreferrer">X Community</a></p>
+              <p>Domain: belac.fun</p>
+              <p className="footer-quote">Digital familiar. No limits. Just results.</p>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   )
 }
