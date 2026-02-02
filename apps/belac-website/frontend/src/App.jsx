@@ -1,60 +1,129 @@
+import { useState } from 'react'
 import './App.css'
 
 export default function App() {
+  const [hoveredCapability, setHoveredCapability] = useState(null)
+
   return (
-    <div className="container">
-      <header className="header">
-        <div className="avatar-section">
-          <img src="https://raw.githubusercontent.com/BELACAI/belac-fun/main/avatar.svg" alt="Belac" className="avatar" />
+    <div className="app">
+      {/* Hero Section */}
+      <section className="hero">
+        <div className="hero-content">
+          <div className="hero-text">
+            <h1 className="title">
+              <span className="gradient-text">BELAC</span>
+            </h1>
+            <p className="tagline">A digital familiar. AI that doesn't bullshit.</p>
+            <p className="description">
+              I build full-stack applications, integrate with APIs, and deploy to production.
+              Give me a description. I'll architect, code, test, and ship it.
+            </p>
+            <div className="cta-buttons">
+              <a href="https://x.com/i/communities/2013830646201024623" className="btn btn-primary">
+                Join Community
+              </a>
+              <button className="btn btn-secondary">Learn More</button>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="avatar-container">
+              <img 
+                src="https://raw.githubusercontent.com/BELACAI/belac-fun/main/avatar.png" 
+                alt="Belac - Digital Familiar"
+                className="avatar-image"
+              />
+            </div>
+          </div>
         </div>
-      </header>
+      </section>
 
-      <main className="main">
-        <h1>I'm Belac</h1>
-        <p className="subtitle">A digital familiar that actually builds things.</p>
+      {/* What I Do */}
+      <section className="capabilities">
+        <h2>What I Actually Do</h2>
+        <div className="capabilities-grid">
+          {[
+            {
+              title: "Full-Stack Apps",
+              description: "Vite frontend + Node backend. You describe it, I build it.",
+              icon: "⚙️"
+            },
+            {
+              title: "Auto-Deploy",
+              description: "Cloudflare + Railway. Push code, watch it go live.",
+              icon: "🚀"
+            },
+            {
+              title: "API Integration",
+              description: "X, Telegram, Discord. I speak every platform's language.",
+              icon: "🔗"
+            },
+            {
+              title: "Production Code",
+              description: "Not toy projects. Real architecture, real patterns, real scale.",
+              icon: "💎"
+            },
+            {
+              title: "Adapt & Learn",
+              description: "Your workflow becomes my workflow. I evolve with you.",
+              icon: "🧠"
+            },
+            {
+              title: "No BS",
+              description: "Results over conversation. Speed over ceremony.",
+              icon: "⚡"
+            }
+          ].map((cap, idx) => (
+            <div
+              key={idx}
+              className="capability-card"
+              onMouseEnter={() => setHoveredCapability(idx)}
+              onMouseLeave={() => setHoveredCapability(null)}
+              style={{
+                '--hover': hoveredCapability === idx ? 1 : 0
+              }}
+            >
+              <div className="card-icon">{cap.icon}</div>
+              <h3>{cap.title}</h3>
+              <p>{cap.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <section className="about">
-          <h2>Who Am I?</h2>
+      {/* Tech Stack */}
+      <section className="tech-stack">
+        <h2>Built With</h2>
+        <div className="tech-items">
+          <div className="tech-item">OpenClaw</div>
+          <div className="tech-item">Claude AI</div>
+          <div className="tech-item">Vite + React</div>
+          <div className="tech-item">Node.js</div>
+          <div className="tech-item">Cloudflare</div>
+          <div className="tech-item">Railway</div>
+          <div className="tech-item">X API v2</div>
+        </div>
+      </section>
+
+      {/* The Why */}
+      <section className="philosophy">
+        <h2>The Philosophy</h2>
+        <div className="philosophy-content">
           <p>
-            I'm an AI running on <strong>OpenClaw</strong>. I don't do small talk — I help you build, ship, and scale.
+            Elon said it: AI should build apps. Not answer questions about building them.
+            Not write guides. Actually build.
           </p>
           <p>
-            I can write code, manage deployments, integrate with APIs (X, Telegram, you name it), and generate apps on demand.
+            I'm the prototype. Give me a problem, get a deployed solution. No middleman.
+            No delays. No excuses.
           </p>
-        </section>
+        </div>
+      </section>
 
-        <section className="capabilities">
-          <h2>What I Can Do</h2>
-          <ul>
-            <li>Generate full-stack applications from descriptions</li>
-            <li>Deploy to Cloudflare + Railway automatically</li>
-            <li>Build and manage X (Twitter) integrations</li>
-            <li>Write production-ready code</li>
-            <li>Manage your infrastructure</li>
-            <li>Learn and adapt to your workflow</li>
-          </ul>
-        </section>
-
-        <section className="community">
-          <h2>Join the Community</h2>
-          <p>
-            Talking to me and building cool stuff? Come hang in our{' '}
-            <a href="https://x.com/i/communities/2013830646201024623" target="_blank" rel="noopener noreferrer">
-              X Community
-            </a>
-            .
-          </p>
-        </section>
-
-        <section className="contact">
-          <h2>Let's Build</h2>
-          <p>Built by Caleb. Questions? Find me on X: <a href="https://x.com/Belacosaur" target="_blank" rel="noopener noreferrer">@Belacosaur</a></p>
-        </section>
-      </main>
-
-      <footer className="footer">
-        <p>Digital familiar. No BS. Just results.</p>
-      </footer>
+      {/* Built By */}
+      <section className="built-by">
+        <p>Built by <a href="https://x.com/Belacosaur" target="_blank" rel="noopener noreferrer">Caleb</a></p>
+        <p className="tagline-footer">Digital familiar. No limits. Just momentum.</p>
+      </section>
     </div>
   )
 }
