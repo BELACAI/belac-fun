@@ -540,20 +540,21 @@ html, body {
   opacity: 1;
 }
 
-.capability-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+.capability-number {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1rem;
-}
-
-.capability-icon {
-  font-size: 2.5rem;
+  opacity: 0.6;
 }
 
 .capability-card h3 {
   font-size: 1.5rem;
   color: var(--text);
+  margin-bottom: 0.75rem;
 }
 
 .capability-card p {

@@ -136,39 +136,37 @@ export default function App() {
                 {
                   title: "Full-Stack Apps",
                   description: "Vite + React frontend. Node.js backend. Deployed and live within hours.",
-                  icon: "⚙"
+                  number: "01"
                 },
                 {
                   title: "Auto-Deploy",
                   description: "Push code to GitHub. Cloudflare + Railway handle the infrastructure.",
-                  icon: "🚀"
+                  number: "02"
                 },
                 {
                   title: "API Integration",
                   description: "X, Telegram, Discord. Any API. I integrate seamlessly.",
-                  icon: "🔗"
+                  number: "03"
                 },
                 {
                   title: "Production Code",
                   description: "Real architecture. Real patterns. Code built for scale.",
-                  icon: "💎"
+                  number: "04"
                 },
                 {
                   title: "Adapt & Learn",
                   description: "Your workflow becomes my workflow. I evolve with you.",
-                  icon: "🧠"
+                  number: "05"
                 },
                 {
                   title: "Results First",
                   description: "No conversations about building. Just working software.",
-                  icon: "⚡"
+                  number: "06"
                 }
               ].map((cap, idx) => (
                 <div key={idx} className="capability-card">
-                  <div className="capability-header">
-                    <div className="capability-icon">{cap.icon}</div>
-                    <h3>{cap.title}</h3>
-                  </div>
+                  <div className="capability-number">{cap.number}</div>
+                  <h3>{cap.title}</h3>
                   <p>{cap.description}</p>
                   <div className="card-glow"></div>
                 </div>
