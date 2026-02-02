@@ -5,6 +5,7 @@ import { MdOutlineRocket, MdHome, MdSchema, MdLightbulb, MdDashboard, MdLightbul
 import './App.css'
 import Dashboard from './pages/Dashboard'
 import Suggestions from './pages/Suggestions'
+import CalorieCounter from './apps/CalorieCounter'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
@@ -13,6 +14,7 @@ export default function App() {
     { id: 'home', label: 'Home', icon: MdHome },
     { id: 'capabilities', label: 'Capabilities', icon: BiSolidCog },
     { id: 'stack', label: 'Stack', icon: MdSchema },
+    { id: 'calories', label: 'Calories', icon: MdDashboard },
     { id: 'philosophy', label: 'Philosophy', icon: MdLightbulb },
     { id: 'dashboard', label: 'Dashboard', icon: MdDashboard },
   ]
@@ -21,6 +23,7 @@ export default function App() {
     { id: 'home', label: 'Home', icon: MdHome },
     { id: 'capabilities', label: 'Capabilities', icon: BiSolidCog },
     { id: 'stack', label: 'Stack', icon: MdSchema },
+    { id: 'calories', label: 'Calories', icon: MdDashboard },
     { id: 'dashboard', label: 'Dashboard', icon: MdDashboard },
     { id: 'suggestions', label: 'Suggest', icon: MdLightbulbOutline },
   ]
@@ -233,6 +236,11 @@ export default function App() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Calorie Counter */}
+        <section className={`view calories-view ${activeSection === 'calories' ? 'active' : ''}`}>
+          <CalorieCounter />
         </section>
 
         {/* Philosophy */}
