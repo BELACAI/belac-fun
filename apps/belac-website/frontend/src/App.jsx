@@ -7,6 +7,7 @@ import { registerMwa, createDefaultAuthorizationCache, createDefaultChainSelecto
 import '@solana/wallet-adapter-react-ui/styles.css'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
+import Home from './pages/Home'
 import Apps from './pages/Apps'
 import Upcoming from './pages/Upcoming'
 import Stake from './pages/Stake'
@@ -15,7 +16,7 @@ import Token from './pages/Token'
 import './App.css'
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState('apps')
+  const [activeSection, setActiveSection] = useState('home')
   const [endpoint, setEndpoint] = useState('')
 
   // Initialize Solana network
@@ -66,6 +67,7 @@ export default function App() {
             <div className="belac-main">
               <Header section={activeSection} />
               <main className="belac-content">
+                {activeSection === 'home' && <Home />}
                 {activeSection === 'token' && <Token />}
                 {activeSection === 'apps' && <Apps />}
                 {activeSection === 'upcoming' && <Upcoming />}

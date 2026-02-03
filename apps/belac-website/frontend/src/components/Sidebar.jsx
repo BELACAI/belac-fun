@@ -1,5 +1,5 @@
 import { GiToken } from 'react-icons/gi'
-import { MdApps, MdSchedule, MdPerson } from 'react-icons/md'
+import { MdApps, MdSchedule, MdPerson, MdHome } from 'react-icons/md'
 import { BiTargetLock } from 'react-icons/bi'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
@@ -10,6 +10,7 @@ export default function Sidebar({ activeSection, onSelect }) {
   const { setVisible } = useWalletModal()
 
   const nav = [
+    { id: 'home', label: 'Home', icon: MdHome },
     { id: 'token', label: 'Token', icon: GiToken },
     { id: 'apps', label: 'Apps', icon: MdApps },
     { id: 'upcoming', label: 'Upcoming', icon: MdSchedule },
