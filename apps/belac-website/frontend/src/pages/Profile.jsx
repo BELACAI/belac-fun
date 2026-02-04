@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-import { MdEdit, MdPlus, MdLogout } from 'react-icons/md'
+import { MdEdit, MdAdd, MdLogout } from 'react-icons/md'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -210,7 +210,7 @@ export default function Profile() {
             className="section-action-button"
             onClick={() => setShowNewConversation(!showNewConversation)}
           >
-            <MdPlus size={16} /> NEW DISCUSSION
+            <MdAdd size={16} /> NEW DISCUSSION
           </button>
         </div>
 
