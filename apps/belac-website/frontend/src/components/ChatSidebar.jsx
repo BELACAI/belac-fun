@@ -73,41 +73,35 @@ export default function ChatSidebar({ onSelectChat, selectedChatId }) {
             onChange={(e) => setNewTitle(e.target.value)}
             required
           />
-          <textarea
-            placeholder="Description (optional)"
-            value={newDesc}
-            onChange={(e) => setNewDesc(e.target.value)}
-            rows={2}
-          />
-          <div className="conv-form-btns">
-            <button type="submit" className="conv-form-btn-create">Create</button>
-            <button type="button" className="conv-form-btn-cancel" onClick={() => setShowNewForm(false)}>Cancel</button>
+          <div className="chat-form-btns">
+            <button type="submit" className="chat-form-btn-create">Create</button>
+            <button type="button" className="chat-form-btn-cancel" onClick={() => setShowNewForm(false)}>Cancel</button>
           </div>
         </form>
       )}
 
-      <div className="conv-list-container">
+      <div className="chat-list-container">
         {loading ? (
-          <div className="conv-loading-text">Loading...</div>
-        ) : conversations.length > 0 ? (
-          <div className="conv-list">
-            {conversations.map((conv) => (
+          <div className="chat-loading-text">Loading...</div>
+        ) : chats.length > 0 ? (
+          <div className="chat-list">
+            {chats.map((chat) => (
               <button
-                key={conv.id}
-                className={`conv-list-item ${selectedConversationId === conv.id ? 'active' : ''}`}
-                onClick={() => onSelectConversation(conv.id)}
+                key={chat.id}
+                className={`chat-list-item ${selectedChatId === chat.id ? 'active' : ''}`}
+                onClick={() => onSelectChat(chat.id)}
               >
-                <div className="conv-list-title">{conv.title}</div>
-                <div className="conv-list-meta">{conv.message_count || 0} msgs</div>
+                <div className="chat-list-title">{chat.title}</div>
+                <div className="chat-list-meta">{chat.message_count || 0} msgs</div>
               </button>
             ))}
           </div>
         ) : (
-          <div className="conv-empty-text">No conversations yet</div>
+          <div className="chat-empty-text">No chats yet</div>
         )}
       </div>
 
-      {!publicKey && <div className="conv-connect-prompt">Connect wallet to chat</div>}
+      {!publicKey && <div className="chat-connect-prompt">Connect wallet to chat</div>}
     </div>
   )
 }
