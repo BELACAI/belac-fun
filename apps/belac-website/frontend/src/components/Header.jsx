@@ -1,9 +1,18 @@
-export default function Header({ section }) {
+export default function Header({ section, appName }) {
   const titles = {
     home: 'Belac OS',
     apps: 'Apps',
     conversations: 'Conversations',
     profile: 'Profile',
+    app: 'App',
+  }
+
+  if (appName) {
+    return (
+      <header className="header">
+        <h2>{appName}</h2>
+      </header>
+    )
   }
 
   return (

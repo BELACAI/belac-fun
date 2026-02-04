@@ -64,8 +64,119 @@
   white-space: nowrap;
 }
 
+/* Apps Section */
+.sidebar-apps-section {
+  padding: var(--spacing-4) 0;
+  border-top: 1px solid var(--color-border-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-apps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-4);
+  gap: var(--spacing-2);
+}
+
+.sidebar-apps-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all var(--transition-base);
+}
+
+.sidebar-apps-toggle:hover {
+  color: var(--color-accent-primary);
+}
+
+.sidebar-apps-add {
+  background: transparent;
+  border: 1px solid var(--color-border-primary);
+  color: var(--color-accent-primary);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+}
+
+.sidebar-apps-add:hover {
+  border-color: var(--color-accent-primary);
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.sidebar-apps-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  margin-top: var(--spacing-2);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.sidebar-app-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: var(--fw-medium);
+}
+
+.sidebar-app-item:hover {
+  background: rgba(0, 255, 255, 0.08);
+  border-left-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.sidebar-app-item.active {
+  background: rgba(0, 255, 255, 0.12);
+  border-left-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.sidebar-app-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-apps-loading,
+.sidebar-apps-empty {
+  padding: var(--spacing-3) var(--spacing-4);
+  text-align: center;
+  color: var(--color-text-tertiary);
+  font-size: 0.8rem;
+}
+
 .sidebar-footer {
   padding-top: var(--spacing-5);
+  margin-top: auto;
   border-top: 1px solid var(--color-border-primary);
 }
 

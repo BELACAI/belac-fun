@@ -15,6 +15,8 @@ import './App.css'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
+  const [activeApp, setActiveApp] = useState(null)
+  const [appDetailId, setAppDetailId] = useState(null)
   const [endpoint, setEndpoint] = useState('')
 
   // Initialize Solana network
@@ -61,14 +63,26 @@ export default function App() {
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <div className="belac-app">
-            <Sidebar activeSection={activeSection} onSelect={setActiveSection} />
+            <Sidebar 
+              activeSection={activeSection} 
+              onSelect={setActiveSection}
+              activeApp={activeApp}
+              onAppSelect={setActiveApp}
+            />
             <div className="belac-main">
-              <Header section={activeSection} />
+              <Header section={activeSection} appName={activeApp?.name} />
               <main className="belac-content">
-                {activeSection === 'home' && <Home />}
-                {activeSection === 'apps' && <Apps />}
-                {activeSection === 'conversations' && <Conversations />}
-                {activeSection === 'profile' && <Profile />}
+                {activeApp && activeApp.worker_url && (
+                  <iframe 
+                    src={activeApp.worker_url} 
+                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    title={activeApp.name}
+                  />
+                )}
+                {!activeApp && activeSection === 'home' && <Home />}
+                {!activeApp && activeSection === 'apps' && <Apps onAppSelect={setActiveApp} onSelectDetail={setAppDetailId} />}
+                {!activeApp && activeSection === 'conversations' && <Conversations />}
+                {!activeApp && activeSection === 'profile' && <Profile onRefreshApps={() => {}} />}
               </main>
             </div>
           </div>

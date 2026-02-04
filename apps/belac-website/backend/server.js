@@ -85,6 +85,7 @@ async function initDB() {
         avatar_url VARCHAR(255),
         verified BOOLEAN DEFAULT FALSE,
         signature VARCHAR(255),
+        installed_apps INTEGER[] DEFAULT '{}',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -671,6 +672,82 @@ app.post('/api/conversations/:id/messages', async (req, res) => {
   } catch (error) {
     console.error('Error posting message:', error)
     res.status(500).json({ error: 'Failed to post message' })
+  }
+})
+
+// INSTALLED APPS MANAGEMENT
+
+// Get user's installed apps
+app.get('/api/users/:wallet_address/installed-apps', async (req, res) => {
+  const { wallet_address } = req.params
+
+  try {
+    const profileRes = await pool.query('SELECT installed_apps FROM user_profiles WHERE wallet_address = $1', [wallet_address])
+    const installedAppIds = profileRes.rows.length > 0 ? profileRes.rows[0].installed_apps || [] : []
+
+    if (installedAppIds.length === 0) {
+      return res.json({ installed_apps: [], count: 0 })
+    }
+
+    // Get app details for each installed app
+    const appsRes = await pool.query('SELECT * FROM apps WHERE id = ANY($1)', [installedAppIds])
+
+    res.json({ installed_apps: appsRes.rows, count: appsRes.rows.length })
+  } catch (error) {
+    console.error('Error fetching installed apps:', error)
+    res.json({ installed_apps: [], count: 0 })
+  }
+})
+
+// Install an app
+app.post('/api/users/:wallet_address/installed-apps/:app_id', async (req, res) => {
+  const { wallet_address, app_id } = req.params
+
+  try {
+    const appIdNum = parseInt(app_id)
+
+    // Get current installed apps
+    const profileRes = await pool.query('SELECT installed_apps FROM user_profiles WHERE wallet_address = $1', [wallet_address])
+
+    let installedApps = profileRes.rows.length > 0 ? profileRes.rows[0].installed_apps || [] : []
+
+    // Add app if not already installed
+    if (!installedApps.includes(appIdNum)) {
+      installedApps = [...installedApps, appIdNum]
+    }
+
+    // Update user profile
+    await pool.query('UPDATE user_profiles SET installed_apps = $1 WHERE wallet_address = $2', [installedApps, wallet_address])
+
+    res.json({ success: true, installed_apps: installedApps })
+  } catch (error) {
+    console.error('Error installing app:', error)
+    res.status(500).json({ error: 'Failed to install app' })
+  }
+})
+
+// Uninstall an app
+app.delete('/api/users/:wallet_address/installed-apps/:app_id', async (req, res) => {
+  const { wallet_address, app_id } = req.params
+
+  try {
+    const appIdNum = parseInt(app_id)
+
+    // Get current installed apps
+    const profileRes = await pool.query('SELECT installed_apps FROM user_profiles WHERE wallet_address = $1', [wallet_address])
+
+    let installedApps = profileRes.rows.length > 0 ? profileRes.rows[0].installed_apps || [] : []
+
+    // Remove app
+    installedApps = installedApps.filter(id => id !== appIdNum)
+
+    // Update user profile
+    await pool.query('UPDATE user_profiles SET installed_apps = $1 WHERE wallet_address = $2', [installedApps, wallet_address])
+
+    res.json({ success: true, installed_apps: installedApps })
+  } catch (error) {
+    console.error('Error uninstalling app:', error)
+    res.status(500).json({ error: 'Failed to uninstall app' })
   }
 })
 
