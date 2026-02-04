@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { MdAdd } from 'react-icons/md'
 import './ChatSidebar.css'
 
-export default function ChatSidebar({ onSelectChat, selectedChatId }) {
+export default function ChatSidebar({ onSelectChat, selectedChatId, onChatCreated, onChatsLoaded }) {
   const { publicKey } = useWallet()
   const [chats, setChats] = useState([])
   const [showNewForm, setShowNewForm] = useState(false)
@@ -14,11 +14,23 @@ export default function ChatSidebar({ onSelectChat, selectedChatId }) {
     fetchChats()
   }, [])
 
+  useEffect(() => {
+    if (chats.length > 0 && onChatsLoaded) {
+      onChatsLoaded(chats)
+    }
+  }, [chats])
+
   const fetchChats = async () => {
     try {
       const res = await fetch('https://belac-fun-production.up.railway.app/api/conversations?limit=50')
       const data = await res.json()
-      setChats(data.conversations || [])
+      const fetchedChats = data.conversations || []
+      setChats(fetchedChats)
+      
+      // Auto-select first chat if none selected
+      if (!selectedChatId && fetchedChats.length > 0 && onSelectChat) {
+        onSelectChat(fetchedChats[0].id)
+      }
     } catch (err) {
       console.error('Error fetching chats:', err)
     } finally {
@@ -47,6 +59,9 @@ export default function ChatSidebar({ onSelectChat, selectedChatId }) {
         setNewTitle('')
         setShowNewForm(false)
         onSelectChat(data.conversation.id)
+        if (onChatCreated) {
+          onChatCreated(data.conversation.id)
+        }
       }
     } catch (err) {
       console.error('Error creating chat:', err)

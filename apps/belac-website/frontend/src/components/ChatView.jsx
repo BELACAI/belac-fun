@@ -86,51 +86,40 @@ export default function ChatView({ chatId, onLoadComplete }) {
 
   return (
     <div className="chat-view">
-      {/* Header */}
-      <div className="conv-view-header">
-        <h2>{conversation.title}</h2>
-        {conversation.display_name && (
-          <p className="conv-view-author">by {conversation.display_name}</p>
-        )}
-        {conversation.description && (
-          <p className="conv-view-description">{conversation.description}</p>
-        )}
-      </div>
-
       {/* Messages */}
-      <div className="conv-view-messages">
+      <div className="chat-view-messages">
         {messages.length > 0 ? (
-          <div className="conv-view-thread">
+          <div className="chat-view-thread">
             {messages.map((msg) => (
-              <div key={msg.id} className="conv-view-message">
-                <div className="conv-msg-author">
+              <div key={msg.id} className="chat-view-message">
+                <div className="chat-msg-author">
                   <strong>{msg.display_name || msg.wallet_address.slice(0, 8)}</strong>
-                  <span className="conv-msg-time">{new Date(msg.created_at).toLocaleString()}</span>
+                  <span className="chat-msg-time">{new Date(msg.created_at).toLocaleString()}</span>
                 </div>
-                <p className="conv-msg-text">{msg.message}</p>
+                <p className="chat-msg-text">{msg.message}</p>
               </div>
             ))}
           </div>
         ) : (
-          <div className="conv-view-no-messages">No replies yet. Be the first!</div>
+          <div className="chat-view-no-messages">No replies yet. Be the first!</div>
         )}
       </div>
 
       {/* Reply Form */}
       {publicKey ? (
-        <form onSubmit={handlePostMessage} className="conv-view-form">
+        <form onSubmit={handlePostMessage} className="chat-view-form">
           <textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Reply to this conversation..."
             rows={3}
           />
-          <button type="submit" className="conv-view-submit" disabled={!newMessage.trim() || sending}>
+          <button type="submit" className="chat-view-submit" disabled={!newMessage.trim() || sending}>
             {sending ? 'Sending...' : 'Reply'}
           </button>
         </form>
       ) : (
-        <div className="conv-view-connect">
+        <div className="chat-view-connect">
           <p>Connect your wallet to reply</p>
           <button onClick={() => setVisible(true)}>Connect Wallet</button>
         </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import '../styles/Home.css'
 
-export default function Home() {
+export default function Home({ onNavigateToChat }) {
   const { publicKey } = useWallet()
   const [prompt, setPrompt] = useState('')
   const [loading, setLoading] = useState(false)
@@ -34,6 +34,49 @@ export default function Home() {
     'I want to track expenses'
   ]
 
+  const createNewChat = async (text) => {
+    if (!text.trim()) {
+      setError('Please enter something to chat about')
+      return
+    }
+    
+    if (!publicKey) {
+      setError('Please connect your wallet to create a chat')
+      return
+    }
+    
+    setLoading(true)
+    setError('')
+    setResult(null)
+
+    try {
+      // Create a new conversation
+      const res = await fetch('https://belac-fun-production.up.railway.app/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_address: publicKey.toBase58(),
+          title: text.length > 50 ? text.substring(0, 50) + '...' : text,
+          description: text
+        })
+      })
+
+      if (!res.ok) throw new Error('Failed to create chat')
+      const data = await res.json()
+      
+      // Navigate to chat page
+      setPrompt('')
+      if (onNavigateToChat) {
+        onNavigateToChat()
+      }
+    } catch (err) {
+      setError('Failed to create chat. Please try again.')
+      console.error('Chat creation error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const analyzePrompt = async (text) => {
     if (!text.trim()) return
     setLoading(true)
@@ -64,7 +107,8 @@ export default function Home() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    analyzePrompt(prompt)
+    // Create a new chat instead of analyzing
+    createNewChat(prompt)
   }
 
   const launchApp = (app) => {

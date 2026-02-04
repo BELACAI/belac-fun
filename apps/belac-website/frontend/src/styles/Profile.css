@@ -5,10 +5,11 @@
 .profile-container {
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  min-height: 100vh;
+  min-height: 100%;
   padding: var(--spacing-7);
   font-family: var(--font-body);
   overflow-y: auto;
+  flex: 1;
 }
 
 .profile-container > * {
@@ -30,10 +31,11 @@
 
 .profile-connect {
   text-align: center;
-  border: 2px dashed var(--color-border-primary);
+  border: 1px dashed var(--color-border-subtle);
   padding: var(--spacing-9);
   max-width: 500px;
   border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
 }
 
 .profile-connect h2 {
@@ -51,20 +53,17 @@
 .profile-connect-button {
   background: var(--color-accent-primary);
   border: none;
-  color: var(--color-bg-primary);
+  color: white;
   padding: var(--spacing-4) var(--spacing-7);
-  font-weight: var(--fw-semibold);
+  font-weight: var(--fw-medium);
   cursor: pointer;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
+  font-size: 0.875rem;
   transition: all var(--transition-base);
   border-radius: var(--radius-md);
-  text-transform: uppercase;
 }
 
 .profile-connect-button:hover {
   background: var(--color-accent-primary-hover);
-  box-shadow: var(--shadow-glow-cyan);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -72,7 +71,7 @@
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .profile-header {
-  border-bottom: 1px solid var(--color-border-primary);
+  border-bottom: 1px solid var(--color-border-subtle);
   padding-bottom: var(--spacing-8);
   margin-bottom: var(--spacing-9);
 }
@@ -86,7 +85,7 @@
 .profile-avatar {
   width: 120px;
   height: 120px;
-  border: 2px solid var(--color-border-primary);
+  border: 1px solid var(--color-border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -6,7 +6,6 @@ import { clusterApiUrl } from '@solana/web3.js'
 import { registerMwa, createDefaultAuthorizationCache, createDefaultChainSelector, createDefaultWalletNotFoundHandler } from '@solana-mobile/wallet-standard-mobile'
 import '@solana/wallet-adapter-react-ui/styles.css'
 import Sidebar from './components/Sidebar'
-import Header from './components/Header'
 import Home from './pages/Home'
 import Apps from './pages/Apps'
 import Chat from './pages/Chat'
@@ -21,8 +20,8 @@ export default function App() {
 
   // Initialize Solana network
   useEffect(() => {
-    const selectedNetwork = process.env.REACT_APP_SOLANA_NETWORK || 'mainnet-beta'
-    const rpcUrl = process.env.REACT_APP_SOLANA_RPC_URL || clusterApiUrl(selectedNetwork)
+    const selectedNetwork = import.meta.env.VITE_SOLANA_NETWORK || 'mainnet-beta'
+    const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL || clusterApiUrl(selectedNetwork)
     setEndpoint(rpcUrl)
   }, [])
 
@@ -70,7 +69,6 @@ export default function App() {
               onAppSelect={setActiveApp}
             />
             <div className="belac-main">
-              <Header section={activeSection} appName={activeApp?.name} />
               <main className="belac-content">
                 {activeApp && activeApp.worker_url && (
                   <iframe 
@@ -79,7 +77,7 @@ export default function App() {
                     title={activeApp.name}
                   />
                 )}
-                {!activeApp && activeSection === 'home' && <Home />}
+                {!activeApp && activeSection === 'home' && <Home onNavigateToChat={() => setActiveSection('chat')} />}
                 {!activeApp && activeSection === 'apps' && <Apps onAppSelect={setActiveApp} onSelectDetail={setAppDetailId} />}
                 {!activeApp && activeSection === 'chat' && <Chat />}
                 {!activeApp && activeSection === 'profile' && <Profile onRefreshApps={() => {}} />}

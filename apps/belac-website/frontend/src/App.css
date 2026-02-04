@@ -1,4 +1,4 @@
-/* BELAC OS v2.0 - MAIN STYLES (PREMIUM DESIGN SYSTEM) */
+/* BELAC OS v2.0 - MODERN LAYOUT */
 
 @import './styles/Design.css';
 
@@ -18,6 +18,8 @@ body {
   color: var(--color-text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Main App Layout */
@@ -33,6 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--color-bg-primary);
 }
 
 .belac-content {
@@ -40,6 +43,9 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--color-bg-primary);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Custom Scrollbar */
@@ -48,16 +54,16 @@ body {
 }
 
 .belac-content::-webkit-scrollbar-track {
-  background: var(--color-bg-primary);
+  background: transparent;
 }
 
 .belac-content::-webkit-scrollbar-thumb {
-  background: var(--color-border-primary);
-  border-radius: var(--radius-md);
+  background: var(--color-border-secondary);
+  border-radius: var(--radius-full);
 }
 
 .belac-content::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
+  background: var(--color-border-primary);
 }
 
 /* Responsive Layout */
@@ -74,12 +80,13 @@ body {
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 1.75rem;
 }
 
 h2 {
@@ -87,28 +94,29 @@ h2 {
 }
 
 h3 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
 p {
   margin: 0;
+  color: var(--color-text-secondary);
 }
 
 /* Buttons (Global) */
 button {
-  font-family: var(--font-sans);
-  transition: all 0.2s ease;
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
 }
 
 /* Links */
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-primary);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--transition-base);
 }
 
 a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-accent-primary-hover);
 }
 
 /* Loading State */
@@ -127,13 +135,14 @@ a:hover {
   }
 }
 
-/* Accessibility */
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
 /* Page Transitions */
 main {
-  animation: fadeIn 0.3s ease-in;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* Accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }

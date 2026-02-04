@@ -4,7 +4,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: var(--spacing-4);
+  min-height: 0;
+  gap: 0;
+  overflow: hidden;
+  background: var(--color-bg-primary);
 }
 
 .chat-view-empty,
@@ -16,42 +19,47 @@
   height: 100%;
   text-align: center;
   color: var(--color-text-tertiary);
+  padding: var(--spacing-8);
 }
 
 .chat-view-empty h2 {
-  font-size: 1.5rem;
-  margin: 0 0 var(--spacing-2) 0;
+  font-size: 1.25rem;
+  margin: 0 0 var(--spacing-3) 0;
   color: var(--color-text-primary);
+  font-weight: var(--fw-semibold);
 }
 
 .chat-view-empty p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9375rem;
+  color: var(--color-text-tertiary);
 }
 
 /* Header */
 .chat-view-header {
-  padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid var(--color-border-primary);
+  padding: var(--spacing-5) var(--spacing-6);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+  background: var(--color-bg-primary);
 }
 
 .chat-view-header h2 {
-  font-size: 1.25rem;
-  margin: 0 0 var(--spacing-1) 0;
-  font-weight: var(--fw-bold);
+  font-size: 1rem;
+  margin: 0 0 var(--spacing-2) 0;
+  font-weight: var(--fw-semibold);
   color: var(--color-text-primary);
 }
 
 .chat-view-author {
   margin: 0;
   color: var(--color-text-tertiary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .chat-view-description {
   margin: var(--spacing-2) 0 0 0;
   color: var(--color-text-secondary);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 
@@ -59,29 +67,34 @@
 .chat-view-messages {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
-  padding-bottom: var(--spacing-2);
+  padding: var(--spacing-6);
+  gap: var(--spacing-6);
+  min-height: 0;
 }
 
 .chat-view-thread {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
+  gap: var(--spacing-6);
 }
 
 .chat-view-message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4) var(--spacing-5);
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-primary);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
   transition: all var(--transition-base);
 }
 
 .chat-view-message:hover {
-  border-color: var(--color-accent-primary);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border-secondary);
+  background: var(--color-bg-hover);
 }
 
 .chat-msg-author {
@@ -89,9 +102,7 @@
   align-items: center;
   gap: var(--spacing-3);
   margin-bottom: var(--spacing-2);
-  padding-bottom: var(--spacing-2);
-  border-bottom: 1px solid var(--color-border-primary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .chat-msg-author strong {
@@ -111,35 +122,43 @@
   color: var(--color-text-primary);
   line-height: 1.6;
   word-wrap: break-word;
+  font-size: 0.9375rem;
 }
 
 .chat-view-no-messages {
   text-align: center;
   color: var(--color-text-tertiary);
-  padding: var(--spacing-6);
-  border: 1px dashed var(--color-border-primary);
-  border-radius: var(--radius-md);
+  padding: var(--spacing-8);
+  border: 1px dashed var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
 }
 
 /* Reply Form */
 .chat-view-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
-  padding-top: var(--spacing-4);
-  border-top: 1px solid var(--color-border-primary);
+  gap: var(--spacing-3);
+  padding: var(--spacing-5) var(--spacing-6);
+  border-top: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+  background: var(--color-bg-primary);
 }
 
 .chat-view-form textarea {
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-primary);
+  border: 1px solid var(--color-border-secondary);
   color: var(--color-text-primary);
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-5);
   font-family: var(--font-body);
   font-size: 0.9375rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   outline: none;
   resize: none;
+  min-height: 60px;
+  max-height: 200px;
+  line-height: 1.5;
+  transition: all var(--transition-base);
 }
 
 .chat-view-form textarea::placeholder {
@@ -148,21 +167,21 @@
 
 .chat-view-form textarea:focus {
   border-color: var(--color-accent-primary);
-  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
 }
 
 .chat-view-submit {
   background: var(--color-accent-primary);
   border: none;
-  color: var(--color-bg-primary);
-  padding: var(--spacing-3) var(--spacing-4);
-  font-weight: var(--fw-semibold);
+  color: white;
+  padding: var(--spacing-3) var(--spacing-5);
+  font-weight: var(--fw-medium);
   font-size: 0.875rem;
   cursor: pointer;
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  align-self: flex-end;
+  min-width: 100px;
 }
 
 .chat-view-submit:hover:not(:disabled) {
@@ -179,33 +198,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-5);
-  border: 1px dashed var(--color-border-primary);
-  border-radius: var(--radius-md);
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  border: 1px dashed var(--color-border-subtle);
+  border-radius: var(--radius-lg);
   text-align: center;
   color: var(--color-text-tertiary);
+  background: var(--color-bg-secondary);
 }
 
 .chat-view-connect p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .chat-view-connect button {
   background: var(--color-accent-primary);
   border: none;
-  color: var(--color-bg-primary);
-  padding: var(--spacing-2) var(--spacing-5);
-  font-weight: var(--fw-semibold);
-  font-size: 0.8rem;
+  color: white;
+  padding: var(--spacing-3) var(--spacing-5);
+  font-weight: var(--fw-medium);
+  font-size: 0.875rem;
   cursor: pointer;
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .chat-view-connect button:hover {
   background: var(--color-accent-primary-hover);
+}
+
+/* Custom Scrollbar */
+.chat-view-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-view-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-view-messages::-webkit-scrollbar-thumb {
+  background: var(--color-border-secondary);
+  border-radius: var(--radius-full);
+}
+
+.chat-view-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-primary);
 }
