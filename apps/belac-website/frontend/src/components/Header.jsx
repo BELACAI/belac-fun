@@ -1,10 +1,8 @@
 export default function Header({ section }) {
   const titles = {
     home: 'Belac OS',
-    token: 'Token',
     apps: 'Apps',
-    upcoming: 'Upcoming',
-    stake: 'Stake',
+    conversations: 'Conversations',
     profile: 'Profile',
   }
 

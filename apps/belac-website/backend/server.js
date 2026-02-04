@@ -75,6 +75,45 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `)
+
+    // User profiles
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_profiles (
+        wallet_address VARCHAR(255) PRIMARY KEY,
+        display_name VARCHAR(255),
+        bio TEXT,
+        avatar_url VARCHAR(255),
+        verified BOOLEAN DEFAULT FALSE,
+        signature VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+
+    // Conversations (ChatGPT-style discussions)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS conversations (
+        id SERIAL PRIMARY KEY,
+        wallet_address VARCHAR(255) NOT NULL,
+        app_id INTEGER,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        message_count INT DEFAULT 0,
+        last_reply_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+
+    // Conversation messages
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS conversation_messages (
+        id SERIAL PRIMARY KEY,
+        conversation_id INTEGER NOT NULL,
+        wallet_address VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
     
     console.log('Database initialized')
   } catch (error) {
@@ -437,6 +476,201 @@ app.post('/api/user-prompts/save', async (req, res) => {
   } catch (error) {
     console.error('Error saving prompt:', error)
     res.status(500).json({ error: 'Failed to save prompt' })
+  }
+})
+
+// PHASE 2: USER PROFILES & CONVERSATIONS
+
+// Get or create user profile
+app.get('/api/profile/:wallet_address', async (req, res) => {
+  const { wallet_address } = req.params
+
+  try {
+    const result = await pool.query('SELECT * FROM user_profiles WHERE wallet_address = $1', [wallet_address])
+    
+    if (result.rows.length === 0) {
+      // Return minimal profile for new users
+      return res.json({
+        wallet_address,
+        display_name: null,
+        bio: null,
+        avatar_url: null,
+        verified: false,
+        created_at: null,
+        updated_at: null,
+        is_new: true
+      })
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Error fetching profile:', error)
+    res.status(500).json({ error: 'Failed to fetch profile' })
+  }
+})
+
+// Create or update user profile
+app.post('/api/profile', async (req, res) => {
+  const { wallet_address, display_name, bio, avatar_url, signature } = req.body
+
+  if (!wallet_address) {
+    return res.status(400).json({ error: 'Wallet address required' })
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO user_profiles (wallet_address, display_name, bio, avatar_url, verified, signature, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+       ON CONFLICT (wallet_address) DO UPDATE SET
+       display_name = COALESCE($2, user_profiles.display_name),
+       bio = COALESCE($3, user_profiles.bio),
+       avatar_url = COALESCE($4, user_profiles.avatar_url),
+       verified = COALESCE($5, user_profiles.verified),
+       signature = COALESCE($6, user_profiles.signature),
+       updated_at = NOW()
+       RETURNING *`,
+      [wallet_address, display_name, bio, avatar_url, !!signature, signature]
+    )
+
+    res.json({ success: true, profile: result.rows[0] })
+  } catch (error) {
+    console.error('Error saving profile:', error)
+    res.status(500).json({ error: 'Failed to save profile' })
+  }
+})
+
+// Get user's conversations
+app.get('/api/conversations/user/:wallet_address', async (req, res) => {
+  const { wallet_address } = req.params
+
+  try {
+    const result = await pool.query(
+      `SELECT c.*, u.display_name, u.avatar_url, a.name as app_name
+       FROM conversations c
+       LEFT JOIN user_profiles u ON c.wallet_address = u.wallet_address
+       LEFT JOIN apps a ON c.app_id = a.id
+       WHERE c.wallet_address = $1
+       ORDER BY c.last_reply_at DESC`,
+      [wallet_address]
+    )
+
+    res.json({ conversations: result.rows, count: result.rows.length })
+  } catch (error) {
+    console.error('Error fetching conversations:', error)
+    res.status(500).json({ error: 'Failed to fetch conversations' })
+  }
+})
+
+// Get all conversations (trending/community)
+app.get('/api/conversations', async (req, res) => {
+  try {
+    const limit = req.query.limit || 20
+    const result = await pool.query(
+      `SELECT c.*, u.display_name, u.avatar_url, a.name as app_name,
+              (SELECT COUNT(*) FROM conversation_messages WHERE conversation_id = c.id) as reply_count
+       FROM conversations c
+       LEFT JOIN user_profiles u ON c.wallet_address = u.wallet_address
+       LEFT JOIN apps a ON c.app_id = a.id
+       ORDER BY c.last_reply_at DESC
+       LIMIT $1`,
+      [limit]
+    )
+
+    res.json({ conversations: result.rows, count: result.rows.length })
+  } catch (error) {
+    console.error('Error fetching conversations:', error)
+    res.json({ conversations: [], count: 0 })
+  }
+})
+
+// Create new conversation
+app.post('/api/conversations', async (req, res) => {
+  const { wallet_address, app_id, title, description } = req.body
+
+  if (!wallet_address || !title) {
+    return res.status(400).json({ error: 'Wallet address and title required' })
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO conversations (wallet_address, app_id, title, description, message_count)
+       VALUES ($1, $2, $3, $4, 0)
+       RETURNING *`,
+      [wallet_address, app_id || null, title, description || '']
+    )
+
+    res.json({ success: true, conversation: result.rows[0] })
+  } catch (error) {
+    console.error('Error creating conversation:', error)
+    res.status(500).json({ error: 'Failed to create conversation' })
+  }
+})
+
+// Get conversation with messages
+app.get('/api/conversations/:id', async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const convResult = await pool.query(
+      `SELECT c.*, u.display_name, u.avatar_url, a.name as app_name
+       FROM conversations c
+       LEFT JOIN user_profiles u ON c.wallet_address = u.wallet_address
+       LEFT JOIN apps a ON c.app_id = a.id
+       WHERE c.id = $1`,
+      [id]
+    )
+
+    if (convResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Conversation not found' })
+    }
+
+    const messagesResult = await pool.query(
+      `SELECT m.*, u.display_name, u.avatar_url
+       FROM conversation_messages m
+       LEFT JOIN user_profiles u ON m.wallet_address = u.wallet_address
+       WHERE m.conversation_id = $1
+       ORDER BY m.created_at ASC`,
+      [id]
+    )
+
+    res.json({
+      conversation: convResult.rows[0],
+      messages: messagesResult.rows,
+      message_count: messagesResult.rows.length
+    })
+  } catch (error) {
+    console.error('Error fetching conversation:', error)
+    res.status(500).json({ error: 'Failed to fetch conversation' })
+  }
+})
+
+// Add message to conversation
+app.post('/api/conversations/:id/messages', async (req, res) => {
+  const { id } = req.params
+  const { wallet_address, message } = req.body
+
+  if (!wallet_address || !message) {
+    return res.status(400).json({ error: 'Wallet address and message required' })
+  }
+
+  try {
+    const messageResult = await pool.query(
+      `INSERT INTO conversation_messages (conversation_id, wallet_address, message)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [id, wallet_address, message]
+    )
+
+    // Update conversation last_reply_at
+    await pool.query(
+      'UPDATE conversations SET last_reply_at = NOW() WHERE id = $1',
+      [id]
+    )
+
+    res.json({ success: true, message: messageResult.rows[0] })
+  } catch (error) {
+    console.error('Error posting message:', error)
+    res.status(500).json({ error: 'Failed to post message' })
   }
 })
 

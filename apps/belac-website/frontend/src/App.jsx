@@ -9,10 +9,8 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import Home from './pages/Home'
 import Apps from './pages/Apps'
-import Upcoming from './pages/Upcoming'
-import Stake from './pages/Stake'
+import Conversations from './pages/Conversations'
 import Profile from './pages/Profile'
-import Token from './pages/Token'
 import './App.css'
 
 export default function App() {
@@ -68,10 +66,8 @@ export default function App() {
               <Header section={activeSection} />
               <main className="belac-content">
                 {activeSection === 'home' && <Home />}
-                {activeSection === 'token' && <Token />}
                 {activeSection === 'apps' && <Apps />}
-                {activeSection === 'upcoming' && <Upcoming />}
-                {activeSection === 'stake' && <Stake />}
+                {activeSection === 'conversations' && <Conversations />}
                 {activeSection === 'profile' && <Profile />}
               </main>
             </div>

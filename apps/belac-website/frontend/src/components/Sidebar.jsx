@@ -1,6 +1,4 @@
-import { GiToken } from 'react-icons/gi'
-import { MdApps, MdSchedule, MdPerson, MdHome } from 'react-icons/md'
-import { BiTargetLock } from 'react-icons/bi'
+import { MdApps, MdPerson, MdHome, MdChat } from 'react-icons/md'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import './Sidebar.css'
@@ -11,10 +9,8 @@ export default function Sidebar({ activeSection, onSelect }) {
 
   const nav = [
     { id: 'home', label: 'Home', icon: MdHome },
-    { id: 'token', label: 'Token', icon: GiToken },
     { id: 'apps', label: 'Apps', icon: MdApps },
-    { id: 'upcoming', label: 'Upcoming', icon: MdSchedule },
-    { id: 'stake', label: 'Stake', icon: BiTargetLock },
+    { id: 'conversations', label: 'Conversations', icon: MdChat },
     { id: 'profile', label: 'Profile', icon: MdPerson },
   ]
 
