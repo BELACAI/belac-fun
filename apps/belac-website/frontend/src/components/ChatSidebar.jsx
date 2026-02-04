@@ -1,33 +1,32 @@
 import { useState, useEffect } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { MdAdd } from 'react-icons/md'
-import './ConversationsSidebar.css'
+import './ChatSidebar.css'
 
-export default function ConversationsSidebar({ onSelectConversation, selectedConversationId }) {
+export default function ChatSidebar({ onSelectChat, selectedChatId }) {
   const { publicKey } = useWallet()
-  const [conversations, setConversations] = useState([])
+  const [chats, setChats] = useState([])
   const [showNewForm, setShowNewForm] = useState(false)
   const [newTitle, setNewTitle] = useState('')
-  const [newDesc, setNewDesc] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchConversations()
+    fetchChats()
   }, [])
 
-  const fetchConversations = async () => {
+  const fetchChats = async () => {
     try {
       const res = await fetch('https://belac-fun-production.up.railway.app/api/conversations?limit=50')
       const data = await res.json()
-      setConversations(data.conversations || [])
+      setChats(data.conversations || [])
     } catch (err) {
-      console.error('Error fetching conversations:', err)
+      console.error('Error fetching chats:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCreateConversation = async (e) => {
+  const handleCreateChat = async (e) => {
     e.preventDefault()
     if (!newTitle.trim() || !publicKey) return
 
@@ -38,36 +37,35 @@ export default function ConversationsSidebar({ onSelectConversation, selectedCon
         body: JSON.stringify({
           wallet_address: publicKey.toBase58(),
           title: newTitle,
-          description: newDesc
+          description: 'Chat with builder'
         })
       })
 
       if (res.ok) {
         const data = await res.json()
-        setConversations([data.conversation, ...conversations])
+        setChats([data.conversation, ...chats])
         setNewTitle('')
-        setNewDesc('')
         setShowNewForm(false)
-        onSelectConversation(data.conversation.id)
+        onSelectChat(data.conversation.id)
       }
     } catch (err) {
-      console.error('Error creating conversation:', err)
+      console.error('Error creating chat:', err)
     }
   }
 
   return (
-    <div className="conv-sidebar-section">
-      <div className="conv-sidebar-header">
-        <h3>Conversations</h3>
+    <div className="chat-sidebar-section">
+      <div className="chat-sidebar-header">
+        <h3>Chat</h3>
         {publicKey && (
-          <button className="conv-new-chat-btn" onClick={() => setShowNewForm(!showNewForm)} title="New Conversation">
+          <button className="chat-new-btn" onClick={() => setShowNewForm(!showNewForm)} title="New Chat">
             <MdAdd size={18} />
           </button>
         )}
       </div>
 
       {showNewForm && publicKey && (
-        <form onSubmit={handleCreateConversation} className="conv-new-chat-form">
+        <form onSubmit={handleCreateChat} className="chat-new-form">
           <input
             type="text"
             placeholder="Chat title..."

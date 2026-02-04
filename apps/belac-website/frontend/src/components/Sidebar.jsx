@@ -36,7 +36,7 @@ export default function Sidebar({ activeSection, onSelect, activeApp, onAppSelec
 
   const nav = [
     { id: 'home', label: 'Home', icon: MdHome },
-    { id: 'conversations', label: 'Conversations', icon: MdChat },
+    { id: 'chat', label: 'Chat', icon: MdChat },
     { id: 'profile', label: 'Profile', icon: MdPerson },
   ]
 

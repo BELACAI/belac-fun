@@ -9,7 +9,7 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import Home from './pages/Home'
 import Apps from './pages/Apps'
-import Conversations from './pages/Conversations'
+import Chat from './pages/Chat'
 import Profile from './pages/Profile'
 import './App.css'
 
@@ -81,7 +81,7 @@ export default function App() {
                 )}
                 {!activeApp && activeSection === 'home' && <Home />}
                 {!activeApp && activeSection === 'apps' && <Apps onAppSelect={setActiveApp} onSelectDetail={setAppDetailId} />}
-                {!activeApp && activeSection === 'conversations' && <Conversations />}
+                {!activeApp && activeSection === 'chat' && <Chat />}
                 {!activeApp && activeSection === 'profile' && <Profile onRefreshApps={() => {}} />}
               </main>
             </div>

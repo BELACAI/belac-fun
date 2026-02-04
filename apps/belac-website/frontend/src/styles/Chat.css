@@ -1,18 +1,18 @@
 @import './Design.css';
 
-.conversations-page {
+.chat-page {
   height: 100%;
   background: var(--color-bg-primary);
 }
 
-.conversations-layout {
+.chat-layout {
   display: flex;
   height: 100%;
   gap: 0;
 }
 
 /* Sidebar */
-.conversations-sidebar-area {
+.chat-sidebar-area {
   width: 260px;
   background: var(--color-bg-secondary);
   border-right: 1px solid var(--color-border-primary);
@@ -21,7 +21,7 @@
 }
 
 /* Main Area */
-.conversations-main-area {
+.chat-main-area {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -34,39 +34,39 @@
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 @media (max-width: 1024px) {
-  .conversations-sidebar-area {
+  .chat-sidebar-area {
     width: 220px;
   }
 
-  .conversations-main-area {
+  .chat-main-area {
     padding: var(--spacing-5);
   }
 }
 
 @media (max-width: 768px) {
-  .conversations-layout {
+  .chat-layout {
     flex-direction: column;
   }
 
-  .conversations-sidebar-area {
+  .chat-sidebar-area {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid var(--color-border-primary);
     max-height: 200px;
   }
 
-  .conversations-main-area {
+  .chat-main-area {
     min-height: 400px;
     padding: var(--spacing-4);
   }
 }
 
 @media (max-width: 480px) {
-  .conversations-sidebar-area {
+  .chat-sidebar-area {
     max-height: 150px;
   }
 
-  .conversations-main-area {
+  .chat-main-area {
     padding: var(--spacing-3);
   }
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-import './ConversationView.css'
+import './ChatView.css'
 
-export default function ConversationView({ conversationId, onLoadComplete }) {
+export default function ChatView({ chatId, onLoadComplete }) {
   const { publicKey } = useWallet()
   const { setVisible } = useWalletModal()
   const [conversation, setConversation] = useState(null)
@@ -13,25 +13,25 @@ export default function ConversationView({ conversationId, onLoadComplete }) {
   const [sending, setSending] = useState(false)
 
   useEffect(() => {
-    if (conversationId) {
-      loadConversation()
+    if (chatId) {
+      loadChat()
     } else {
       setConversation(null)
       setMessages([])
       setLoading(false)
     }
-  }, [conversationId])
+  }, [chatId])
 
-  const loadConversation = async () => {
+  const loadChat = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${conversationId}`)
+      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${chatId}`)
       const data = await res.json()
       setConversation(data.conversation)
       setMessages(data.messages || [])
       onLoadComplete?.(data.conversation)
     } catch (err) {
-      console.error('Error loading conversation:', err)
+      console.error('Error loading chat:', err)
     } finally {
       setLoading(false)
     }
@@ -43,7 +43,7 @@ export default function ConversationView({ conversationId, onLoadComplete }) {
 
     setSending(true)
     try {
-      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${conversationId}/messages`, {
+      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${chatId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -54,7 +54,7 @@ export default function ConversationView({ conversationId, onLoadComplete }) {
 
       if (res.ok) {
         setNewMessage('')
-        loadConversation() // Reload to show new message
+        loadChat() // Reload to show new message
       }
     } catch (err) {
       console.error('Error posting message:', err)
@@ -63,29 +63,29 @@ export default function ConversationView({ conversationId, onLoadComplete }) {
     }
   }
 
-  if (!conversationId) {
+  if (!chatId) {
     return (
-      <div className="conv-view-empty">
-        <h2>Select a conversation</h2>
-        <p>Choose a chat from the list on the left</p>
+      <div className="chat-view-empty">
+        <h2>Select a chat</h2>
+        <p>Choose a chat from the list on the left or start a new one</p>
       </div>
     )
   }
 
   if (loading) {
-    return <div className="conv-view-loading">Loading conversation...</div>
+    return <div className="chat-view-loading">Loading chat...</div>
   }
 
   if (!conversation) {
     return (
-      <div className="conv-view-empty">
-        <h2>Conversation not found</h2>
+      <div className="chat-view-empty">
+        <h2>Chat not found</h2>
       </div>
     )
   }
 
   return (
-    <div className="conv-view">
+    <div className="chat-view">
       {/* Header */}
       <div className="conv-view-header">
         <h2>{conversation.title}</h2>
