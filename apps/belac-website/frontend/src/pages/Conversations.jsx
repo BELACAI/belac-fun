@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react'
-import { MdChat } from 'react-icons/md'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { MdAdd, MdClose } from 'react-icons/md'
 import '../styles/Conversations.css'
 
 export default function Conversations() {
+  const { publicKey } = useWallet()
   const [conversations, setConversations] = useState([])
+  const [selectedId, setSelectedId] = useState(null)
+  const [selectedDetail, setSelectedDetail] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [selectedConversation, setSelectedConversation] = useState(null)
-  const [conversationDetail, setConversationDetail] = useState(null)
+  const [newMessage, setNewMessage] = useState('')
+  const [showNewConv, setShowNewConv] = useState(false)
+  const [newConvTitle, setNewConvTitle] = useState('')
+  const [newConvDesc, setNewConvDesc] = useState('')
 
+  // Load conversations
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const res = await fetch('https://belac-fun-production.up.railway.app/api/conversations')
+        const res = await fetch('https://belac-fun-production.up.railway.app/api/conversations?limit=50')
         const data = await res.json()
         setConversations(data.conversations || [])
       } catch (err) {
@@ -24,123 +31,178 @@ export default function Conversations() {
     fetchConversations()
   }, [])
 
-  const handleSelectConversation = async (conv) => {
-    setSelectedConversation(conv.id)
+  // Load conversation detail
+  const handleSelectConversation = async (convId) => {
+    setSelectedId(convId)
     try {
-      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${conv.id}`)
+      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${convId}`)
       const data = await res.json()
-      setConversationDetail(data)
+      setSelectedDetail(data)
     } catch (err) {
       console.error('Error fetching conversation detail:', err)
     }
   }
 
-  const handleBackToList = () => {
-    setSelectedConversation(null)
-    setConversationDetail(null)
+  // Post new message
+  const handlePostMessage = async (e) => {
+    e.preventDefault()
+    if (!newMessage.trim() || !publicKey) return
+
+    try {
+      const res = await fetch(`https://belac-fun-production.up.railway.app/api/conversations/${selectedId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_address: publicKey.toBase58(),
+          message: newMessage.trim()
+        })
+      })
+
+      if (res.ok) {
+        setNewMessage('')
+        // Reload conversation detail
+        handleSelectConversation(selectedId)
+      }
+    } catch (err) {
+      console.error('Error posting message:', err)
+    }
   }
 
-  if (loading) {
-    return (
-      <div className="conversations-container">
-        <div className="loading">Loading conversations...</div>
-      </div>
-    )
+  // Create new conversation
+  const handleCreateConversation = async (e) => {
+    e.preventDefault()
+    if (!newConvTitle.trim() || !publicKey) return
+
+    try {
+      const res = await fetch('https://belac-fun-production.up.railway.app/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_address: publicKey.toBase58(),
+          title: newConvTitle,
+          description: newConvDesc
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setConversations([data.conversation, ...conversations])
+        setNewConvTitle('')
+        setNewConvDesc('')
+        setShowNewConv(false)
+        handleSelectConversation(data.conversation.id)
+      }
+    } catch (err) {
+      console.error('Error creating conversation:', err)
+    }
   }
 
-  // Conversation Detail View
-  if (selectedConversation && conversationDetail) {
-    return (
-      <div className="conversations-container">
-        <div className="conversation-detail-view">
-          <button className="back-button" onClick={handleBackToList}>← BACK TO CONVERSATIONS</button>
-
-          <div className="conversation-detail-header">
-            <h1>{conversationDetail.conversation.title}</h1>
-            <p className="detail-author">
-              Started by {conversationDetail.conversation.display_name || conversationDetail.conversation.wallet_address.slice(0, 8)}
-            </p>
-          </div>
-
-          {conversationDetail.conversation.description && (
-            <p className="conversation-detail-description">{conversationDetail.conversation.description}</p>
-          )}
-
-          <div className="messages-section">
-            <h3>Discussion ({conversationDetail.messages.length} replies)</h3>
-
-            <div className="messages-list">
-              {conversationDetail.messages.length > 0 ? (
-                conversationDetail.messages.map((msg) => (
-                  <div key={msg.id} className="message-item">
-                    <div className="message-author">
-                      {msg.avatar_url && <img src={msg.avatar_url} alt="" className="message-avatar" />}
-                      <span>{msg.display_name || msg.wallet_address.slice(0, 8)}</span>
-                      <span className="message-time">
-                        {new Date(msg.created_at).toLocaleDateString()} {new Date(msg.created_at).toLocaleTimeString()}
-                      </span>
-                    </div>
-                    <p className="message-text">{msg.message}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="no-messages">No replies yet. Be the first to comment!</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Conversations List View
   return (
-    <div className="conversations-container">
-      <div className="conversations-header">
-        <h1>Community Conversations</h1>
-        <p>Browse discussions about apps, features, and more</p>
+    <div className="conversations-page">
+      {/* SIDEBAR */}
+      <div className="conv-sidebar">
+        <div className="conv-sidebar-header">
+          <h2>Conversations</h2>
+          <button className="conv-new-btn" onClick={() => setShowNewConv(!showNewConv)} title="New Conversation">
+            <MdAdd size={20} />
+          </button>
+        </div>
+
+        {showNewConv && (
+          <form onSubmit={handleCreateConversation} className="conv-new-form">
+            <input
+              type="text"
+              placeholder="Title"
+              value={newConvTitle}
+              onChange={(e) => setNewConvTitle(e.target.value)}
+              required
+            />
+            <textarea placeholder="Description (optional)" value={newConvDesc} onChange={(e) => setNewConvDesc(e.target.value)} rows={2} />
+            <div className="conv-form-actions">
+              <button type="submit" className="conv-form-btn conv-form-btn-submit">Create</button>
+              <button type="button" className="conv-form-btn conv-form-btn-cancel" onClick={() => setShowNewConv(false)}>Cancel</button>
+            </div>
+          </form>
+        )}
+
+        <div className="conv-list">
+          {loading ? (
+            <div className="conv-loading">Loading...</div>
+          ) : conversations.length > 0 ? (
+            conversations.map((conv) => (
+              <button
+                key={conv.id}
+                className={`conv-item ${selectedId === conv.id ? 'active' : ''}`}
+                onClick={() => handleSelectConversation(conv.id)}
+              >
+                <div className="conv-item-title">{conv.title}</div>
+                <div className="conv-item-meta">{conv.message_count || 0} replies</div>
+              </button>
+            ))
+          ) : (
+            <div className="conv-empty">No conversations yet</div>
+          )}
+        </div>
       </div>
 
-      {conversations.length > 0 ? (
-        <div className="conversations-grid">
-          {conversations.map((conv) => (
-            <div
-              key={conv.id}
-              className="community-conversation-card"
-              onClick={() => handleSelectConversation(conv)}
-            >
-              <div className="card-header">
-                <div className="card-icon">
-                  <MdChat size={24} />
-                </div>
-                <div className="card-meta">
-                  <span className="card-author">
-                    {conv.display_name || 'Anonymous'}
-                  </span>
-                  <span className="card-date">
-                    {new Date(conv.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-
-              <h3 className="card-title">{conv.title}</h3>
-
-              {conv.description && (
-                <p className="card-description">{conv.description}</p>
-              )}
-
-              <div className="card-footer">
-                {conv.app_name && <span className="card-app">{conv.app_name}</span>}
-                <span className="card-replies">{conv.reply_count || 0} replies</span>
+      {/* MAIN CHAT AREA */}
+      <div className="conv-main">
+        {selectedDetail ? (
+          <>
+            <div className="conv-header">
+              <div className="conv-header-content">
+                <h1>{selectedDetail.conversation.title}</h1>
+                <p>{selectedDetail.conversation.display_name || selectedDetail.conversation.wallet_address.slice(0, 8)}</p>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="conversations-empty">
-          <p>No conversations yet. Create the first one!</p>
-        </div>
-      )}
+
+            <div className="conv-messages">
+              {selectedDetail.conversation.description && (
+                <div className="conv-description-box">
+                  <p>{selectedDetail.conversation.description}</p>
+                </div>
+              )}
+
+              <div className="conv-thread">
+                {selectedDetail.messages.length > 0 ? (
+                  selectedDetail.messages.map((msg) => (
+                    <div key={msg.id} className="conv-message">
+                      <div className="conv-message-author">
+                        <strong>{msg.display_name || msg.wallet_address.slice(0, 8)}</strong>
+                        <span className="conv-message-time">{new Date(msg.created_at).toLocaleString()}</span>
+                      </div>
+                      <p className="conv-message-text">{msg.message}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="conv-no-messages">No replies yet. Be the first to comment!</div>
+                )}
+              </div>
+            </div>
+
+            {publicKey ? (
+              <form onSubmit={handlePostMessage} className="conv-reply-form">
+                <textarea
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Add your reply..."
+                  rows={3}
+                />
+                <button type="submit" className="conv-reply-btn" disabled={!newMessage.trim()}>
+                  Reply
+                </button>
+              </form>
+            ) : (
+              <div className="conv-reply-prompt">Connect wallet to reply</div>
+            )}
+          </>
+        ) : (
+          <div className="conv-empty-state">
+            <h2>Select a conversation</h2>
+            <p>Choose from the list on the left to view and reply</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
